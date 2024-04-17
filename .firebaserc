@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "quickchat-8b689": {
+      "hosting": {
+        "quickchat": [
+          "quickchat-8b689"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "quickchat-8b689"
+  }
+}

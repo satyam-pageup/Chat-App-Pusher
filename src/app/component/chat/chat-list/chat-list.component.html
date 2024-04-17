@@ -1,0 +1,47 @@
+<div class="chat-list">
+    <div class="mt-3 mb-3">
+        <input type="text" placeholder="Search..." class="input-box" [(ngModel)]="searchUser" (input)="onSearchUser()"
+            (keydown.arrowdown)="onArrowDown()" (keydown.arrowup)="onArrowUp()" (keydown.enter)="onEnterPress()">
+
+        <div class="dropdown">
+            <div class="dropdown-menu" style="width: 100%;"
+                [ngStyle]="{'display': (searchResult.length > 0)? 'block':'none'}">
+                <li class="userlist-s" (click)="getSearchedUserChats(item.id, item.employeeName)" [ngClass]="{'active': selectedIndex == i}"
+                    *ngFor="let item of searchResult; let i=index">
+                    {{ item.employeeName }} {{item.id}}
+                </li>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="list-group">
+        <a *ngFor="let chat of userChatList; let i=index" class="list-group-item list-group-item-action c-p-s"
+            aria-current="true">
+
+            <div (click)="getChats(chat.recieverId,chat.recieverName, chat)" class="show-option">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">{{chat.recieverName}}</h5>
+
+                    @if (chat.newMessages > 0) {
+                    <span class="badge bg-primary rounded-pill">{{chat.newMessages}}</span>
+                    }
+                    @else{
+                    <span>{{chat.lastMessageDate| utcToIndianTime }}</span>
+                    }
+
+                </div>
+                <div class="d-flex justify-content-between">
+                    <p class="mb-1"  style="overflow: hidden;">{{chat.lastMessage}}</p>
+                    <i class='bx bx-chevron-down'>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item"><i class="bx bx-trash"></i>Delete</a></li>
+                            <li><a class="dropdown-item"> <i class='bx bxs-volume-mute'></i>Muted</a></li>
+                        </ul>
+                    </i>
+                </div>
+            </div>
+        </a>
+
+    </div>
+</div>

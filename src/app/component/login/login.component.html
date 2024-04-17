@@ -1,0 +1,59 @@
+<div class="container-fluid" style="display: flex; height: 100vh; justify-content: center; align-items: center;">
+    <form [formGroup]="loginForm" style="width: 500px;" class="card">
+
+        <div class="row mx-0 mb-4 heading">
+            <h3>Login</h3>
+        </div>
+
+        <div style="padding: 10px 0;">
+            <div class="row mx-0 mb-3">
+                <div class="col-md-1">
+                    <label>Email</label>
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-10">
+                    <div class="row mx-0">
+                        <input type="email" class="form-control" placeholder="Enter email" formControlName="email">
+                        <small class="text-danger p-0"
+                            *ngIf="loginForm.controls.email.touched || loginForm.controls.email.dirty">
+                            <small *ngIf="loginForm.controls.email.errors?.['required']">Required</small>
+                            <small *ngIf="loginForm.controls.email.errors?.['pattern']">Enter Valid Email</small>
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mx-0 mb-3">
+                <div class="col-md-1">
+                    <label>Password</label>
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-10">
+                    <div class="row mx-0">
+                        <input type="password" class="form-control" placeholder="Enter Password"
+                            formControlName="password">
+                        <small class="text-danger p-0"
+                            *ngIf="loginForm.controls.password.touched || loginForm.controls.password.dirty">
+                            <small *ngIf="loginForm.controls.password.errors?.['required']">Required</small>
+                        </small>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="row mx-0" style="display: flex; flex-direction: column;">
+                <div class="col mb-2">
+                    <p>Don't Have account? <a [routerLink]="'/register'"> Register here</a> </p>
+                </div>
+                <div class="col">
+                    <button *ngIf="!isBtnLoaderActive" (click)="login()" class="btn btn-primary">Login</button>
+
+                    <button *ngIf="isBtnLoaderActive" class="btn btn-primary" type="button" disabled>
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        Loading...
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

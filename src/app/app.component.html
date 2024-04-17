@@ -1,0 +1,13 @@
+<div class="conatiner d-flex justify-content-around align-items-center" *ngIf="showChatMessages">
+    <div class=" d-flex justify-content-center align-items-center">
+        <h2 class="m-0">Hello {{_utilService.loggedInUserName}}</h2>
+        <div class="gif">
+            <img src="../assets/garfield-monday.gif" alt="">
+        </div>
+    </div>
+    <div>
+        <button class="btn btn-primary" (click)="logout()">Logout</button>
+    </div>
+</div>
+
+<router-outlet></router-outlet>

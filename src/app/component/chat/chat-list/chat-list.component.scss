@@ -1,0 +1,63 @@
+.input-box{
+    width: 100%;
+    border: none;
+    border-bottom: 0.5px solid;
+    padding: 5px;
+}
+
+.input-box:focus-visible{
+    outline:none ;
+}
+
+.chat-list{
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    padding: 10px;
+}
+
+.userlist-s{
+    padding: 5px;
+    font-size: large;
+    cursor: pointer;
+}
+.userlist-s:hover{
+    background-color: bisque;
+    font-weight: 700;
+}
+
+.active{
+    background-color: bisque;
+    font-weight: 700;
+}
+
+.list-group{
+    cursor: pointer;
+}
+
+.show-option .bx-chevron-down {
+    display: none;
+}
+
+.show-option .dropdown-menu {
+    display: none;
+}
+
+.show-option:hover .bx-chevron-down {
+    display: block;
+    font-size: 25px;
+    cursor: pointer;
+}
+
+.bx-chevron-down:hover .dropdown-menu {
+    display: block;
+    right: 0;
+    // position: fixed;
+}
+
+.dropdown-menu{
+    .dropdown-item{
+        font-size: 19px;
+        i{
+            padding: 0 6px;
+        }
+    }
+}

@@ -1,0 +1,135 @@
+<div class="chat-container" [ngStyle]="{'display' : showChatMessages? 'block' :'none'}">
+    <ng-container>
+        <div class="row mx-0 header">
+            <div class="col-1 image-section">
+                <img src="../../../../assets/jethalal_1621940926.jpg" width="40px" height="40px" alt="">
+            </div>
+            <div class="col-10 name-section">
+                <div>
+                    <ng-container>
+                        <h5>{{Name}}</h5>
+                    </ng-container>
+                </div>
+            </div>
+            <div class="col-1 option-bar">
+                <div class="btn-group dropup">
+                    <i data-bs-toggle="dropdown" aria-expanded="false" class='bx bx-menu c-p-s'></i>
+                    <ul class="dropdown-menu">
+                        <li (click)="blockUser()">
+                            <i class='bx bx-block'></i>
+                            {{userBlockState}}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="row mx-0 body" appDnd (fileDropped)="onFileDropped($event)">
+
+            <div class="chat-container" #scrollframe (scroll)="onScrollUp($event)">
+
+                <ng-container *ngFor="let chats of messageList; let i=index" #item>
+
+
+                    <ng-container
+                        *ngIf="i == 0 || (messageList[i].messageDate |date: 'dd/MM/yyyy') != (messageList[i-1].messageDate | date: 'dd/MM/yyyy')">
+                        <div class="groupByDate">
+                            <small class="showDay">{{ chats.messageDate | timeAgo }}</small>
+                        </div>
+                    </ng-container>
+
+                    <div class="message-box friend-message" *ngIf="recevierId == chats.senderId">
+                        <p style="word-wrap: break-word;">{{chats.message}}
+                            <br>
+                            <span>
+                                {{ chats.messageDate| utcToIndianTime }}
+                               
+                            </span>
+                        </p>
+                    </div>
+                    <div class="message-box my-message" *ngIf="_utilService.loggedInUserId == chats.senderId">
+                        <p style="word-wrap: break-word;">
+                            {{chats.message}}
+                            <i (click)="deleteMessage(chats.id, i)" class='bx bxs-trash c-p-s'
+                                style="color: black;"></i>
+                            <span>
+                                {{ chats.messageDate| utcToIndianTime }}
+                                <i *ngIf="!chats.isSeen" style="color: rgb(51, 51, 51); font-size: 15px;" class='bx bx-check'></i>
+                                <i *ngIf="chats.isSeen" style="color: blue; font-size: 15px;" class='bx bx-check-double' ></i>
+                            </span>
+                        </p>
+                    </div>
+                </ng-container>
+            </div>
+
+            <div class="row mx-0 footer">
+                <div *ngIf="userBlockState=='Block'" class="row-mx-0" style="width: 100%; margin: auto;">
+                    @if (selectedFileName != "") {
+                    <div class="selected-file">
+                        <div class="selected-file-div-s">
+                            {{selectedFileName}}
+                            <i class='bx bx-x c-p' style="color: red;"
+                                (click)='selectedFileName="" || selectedDocument="" || selectedMedia=""'></i>
+                        </div>
+                    </div>
+                    }
+                    <div class="message-box">
+                        <i class='bx bx-smile' (click)="toggleEmojiPicker()"></i>
+                        <div class="emoji-container">
+                            <emoji-mart class="emoji-mart" *ngIf="showEmojiPicker" (emojiSelect)="addEmoji($event)"
+                                title="Pick your emoji…"></emoji-mart>
+                        </div>
+                        <div class="btn-group dropup">
+                            <i data-bs-toggle="dropdown" aria-expanded="false" class='bx bx-plus'></i>
+                            <ul class="dropdown-menu ">
+                                <li>
+                                    <label for="file-upload" class="custom-file-upload">
+                                        <i class='bx bxs-file-doc'></i>
+                                        Document
+                                        <input id="file-upload" type="file" (change)="onDocumentSelect($event)"
+                                            [formControl]="documentFormControl"
+                                            accept=".xlsx,.xls,.doc, .docx,.ppt, .pptx,.pdf" />
+                                    </label>
+
+                                </li>
+                                <li>
+                                    <label for="img-upload" class="custom-file-upload">
+                                        <i class='bx bx-images'></i>
+                                        Photos & Videos
+                                        <input id="img-upload" type="file" [formControl]="mediaFormControl"
+                                            (change)="onMediaSelect($event)" [value]="" accept="image/*,video/*" />
+                                    </label>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- <input type="text" placeholder="Type a message" [(ngModel)]="message"
+                            (keydown.enter)="sendMessage()"> -->
+
+                        <textarea rows="1" [(ngModel)]="message" (keydown.enter)="onEnterKeyDown($event)"></textarea>
+                        <i class='bx bx-send' (click)="sendMessage()"></i>
+                    </div>
+                </div>
+                <div *ngIf="userBlockState=='Unblock'"
+                    class="row-mx-0 d-flex justify-content-center align-items-center">
+                    <p>Can't send a message to blocked contact</p>
+                </div>
+
+            </div>
+        </div>
+    </ng-container>
+
+</div>
+
+
+<div class="chat-container" [ngStyle]="{'display' : showChatMessages? 'none' :'block'}">
+    <div class="container d-flex justify-content-center align-items-center">
+        <img src="../../../../assets/chat-1873536_1280-removebg-preview.png" alt="">
+    </div>
+</div>
+
+
+
+
+
+
+<app-confirmation></app-confirmation>
