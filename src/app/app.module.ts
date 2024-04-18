@@ -22,6 +22,8 @@ import { ModalModule } from 'ngx-bootstrap/modal';
 import { DndDirective } from './shared/directives/dnd.directive';
 import { TimeAgoPipe } from './shared/pipe/time-ago.pipe';
 import { ChatlistTimeAgoPipe } from './shared/pipe/chatlist-time-ago.pipe';
+import { PusherService } from '../services/pusher.service';
+import { PusherMessageService } from '../services/pusher-message.service';
 
 initializeApp(environment.firebase);
 @NgModule({
@@ -51,7 +53,8 @@ initializeApp(environment.firebase);
     ModalModule.forRoot()
   ],
   providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    PusherService, PusherMessageService
   ],
   bootstrap: [AppComponent]
 })

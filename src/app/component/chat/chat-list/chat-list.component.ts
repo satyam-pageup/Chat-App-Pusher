@@ -8,6 +8,7 @@ import { NumberString } from '../../../model/util.model';
 import { IGetAllUser } from '../../../response/user.response';
 import { IEmplyeeOptions } from '../../../model/option.model';
 import { Subject, debounceTime, takeUntil } from 'rxjs';
+import { PusherService } from '../../../../services/pusher.service';
 
 @Component({
   selector: 'app-chat-list',
@@ -32,7 +33,7 @@ export class ChatListComponent extends ComponentBase implements OnInit, OnDestro
     orderBy: ""
   }
 
-  constructor(public _utilService: UtilService) {
+  constructor(public _utilService: UtilService, private _pusherService: PusherService) {
     super();
 
 
@@ -150,6 +151,20 @@ export class ChatListComponent extends ComponentBase implements OnInit, OnDestro
     this.getAPICallPromise<ResponseIterableI<ChatBoxI[]>>(APIRoutes.getChatBox, this.headerOption).then(
       (res) => {
         this.userChatList = res.iterableData;
+        let channelList: string[] = [];
+        this.userChatList.forEach(
+          (user) =>{
+            let cName: string = '';
+            if(user.recieverId < this._utilService.loggedInUserId){
+              cName = `${user.recieverId}-${this._utilService.loggedInUserId}`;
+            }
+            else{
+              cName = `${this._utilService.loggedInUserId}-${user.recieverId}`;
+            }
+            channelList.push(cName);
+          }
+        );
+        this._pusherService.subcribeToChannelE.emit(channelList);
       }
     )
   }
