@@ -42,7 +42,6 @@ export class FirebaseService extends ComponentBase {
   public listen() {
     const messaging = getMessaging();
     onMessage(messaging, (payload) => {
-
       const nofication = payload as NotificationResponse;
       const senderID: number = parseInt(nofication.data['gcm.notification.userId']);
       const data: NumberString = {
