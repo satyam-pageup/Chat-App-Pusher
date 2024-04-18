@@ -11,6 +11,7 @@ export const APIRoutes = {
     unBlockUser:(receiverId: number) => `/BlockUser/RemoveBlocked/${receiverId}`,
     sendMessage: (receiverId: number) => `/CommunityMessage/SendMessage/${receiverId}`,
     getMessageById: (id: number) => `/CommunityMessage/DisplayMessage/${id}`,
+    deleteConversationById: (id: number) => `/CommunityMessage/DeleteConversation/${id}`,
 
 
 }

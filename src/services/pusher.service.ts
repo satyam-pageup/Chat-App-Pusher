@@ -1,6 +1,7 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import Pusher from 'pusher-js';
 import { environment } from '../environments/environment';
+import { MessageI } from '../app/model/chat.model';
 
 @Injectable({
   providedIn: 'root'
@@ -10,21 +11,23 @@ export class PusherService {
   messagesChannel: any;
 
   public subcribeToChannelE: EventEmitter<string[]> = new EventEmitter<string[]>();
+  public messageReceivedE: EventEmitter<MessageI> = new EventEmitter<MessageI>();
 
   constructor() {
-    // Enable pusher logging - don't include this in production
-    Pusher.logToConsole = true;
-    // this.initializePusher();
+    // Pusher.logToConsole = true;
+    this.initializePusher();
   }
 
   initializePusher(): void {
     this.pusher = new Pusher(environment.pusher.key, { cluster: 'ap2', });
-    console.log(this.pusher);
   }
 
   public subscribeToChannel(channelName: string) {
-    // this.messagesChannel = this.pusher.subscribe(channelName);
-    // console.log(this.messagesChannel);
     return this.pusher.subscribe(channelName);
   }
+
+  // public subscribeToUserChannel(channelname: string, eventName: string, callback: (data: any) => void): void {
+  //   const channel = this.pusher.subscribe(channelname);
+  //   channel.bind(eventName, callback);
+  // }
 }

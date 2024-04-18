@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 import { environment } from '../environments/environment';
 import { ComponentBase } from '../app/shared/class/ComponentBase.class';
-import { GetLoggedInUserDetailI } from '../app/response/responseG.response';
+import { IResponseG } from '../app/response/responseG.response';
 import { APIRoutes } from '../app/shared/constants/apiRoutes.constant';
 import { INotificationModel, NotificationResponse } from '../app/model/notification.model';
 import { UtilService } from './util.service';
@@ -50,12 +50,12 @@ export class FirebaseService extends ComponentBase {
         data: nofication.notification.body
       }
 
-      if (this._utilService.currentOpenedChat == senderID) {
-        this._utilService.isListennotificationE.emit(data);
-      }
-      else {
-        this._utilService.updateChatOnNotificationE.emit(data);
-      }
+      // if (this._utilService.currentOpenedChat == senderID) {
+      //   this._utilService.isListennotificationE.emit(data);
+      // }
+      // else {
+      //   this._utilService.updateChatOnNotificationE.emit(data);
+      // }
     });
   }
 
@@ -89,7 +89,7 @@ export class FirebaseService extends ComponentBase {
       systemToken: token
     };
 
-    this.putAPICallPromise<{ systemToken: string }, GetLoggedInUserDetailI<null>>(APIRoutes.updateSystemToken, newToken, this.headerOption).then(
+    this.putAPICallPromise<{ systemToken: string }, IResponseG<null>>(APIRoutes.updateSystemToken, newToken, this.headerOption).then(
       (res) => {
         console.log(res);
       }

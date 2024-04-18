@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { FirebaseService } from '../services/firebase.service';
 import { ComponentBase } from './shared/class/ComponentBase.class';
-import { GetLoggedInUserDetailI } from './response/responseG.response';
+import { IResponseG } from './response/responseG.response';
 import { UserI } from './response/user.response';
 import { UtilService } from '../services/util.service';
 import { Router } from '@angular/router';
 
 import { PusherService } from '../services/pusher.service';
+import { MessageI } from './model/chat.model';
 
 @Component({
   selector: 'app-root',
@@ -19,14 +20,8 @@ export class AppComponent extends ComponentBase implements OnInit {
   public userDetail!: UserI;
   public username: string = '';
   public showChatMessages: boolean = false;
-  public channel: any;
-  public channelList: string[] = [
-    'EmpId_7-RId_9',
-    'EmpId_5-RId_9',
-    'EmpId_1-RId_9',
-    'EmpId_3-RId_9',
-    'EmpId_14-RId_9'
-  ]
+
+  private channel: any;
 
   constructor(private firebaseService: FirebaseService,
     public _utilService: UtilService,
@@ -47,30 +42,11 @@ export class AppComponent extends ComponentBase implements OnInit {
       }
     )
 
-    // _pusherService.subcribeToChannelE.subscribe(
-    //   (cName: string[]) => {
-    //     _pusherService.initializePusher();
-    //     cName.forEach(
-    //       (name: string) => {
-    //         this.channel = this._pusherService.subscribeToChannel(name);
-    //         this.channel.bind('new-message', (data: any) => {
-    //           console.log("hello", data);
-    //         })
-    //       }
-    //     )
-    //   }
-    // )
-
-        _pusherService.initializePusher();
-    this.channel = _pusherService.subscribeToChannel('7-9');
-    this.channel.bind('my-event', (data: any) => {
-      console.log("hello", data);
-    })
+    this.subscribeToUserChannel();
   }
 
   ngOnInit(): void {
     if (localStorage.getItem("jwtToken")) {
-      // this.getLoggedInUserId();
       this.showChatMessages = true;
     }
   }
@@ -81,11 +57,19 @@ export class AppComponent extends ComponentBase implements OnInit {
     this._route.navigate(['/login']);
   }
 
-  private getLoggedInUserId() {
-    this.getAPICallPromise<GetLoggedInUserDetailI<UserI>>('/userDetails', this.headerOption).then(
-      (res) => {
-        this.username = res.data.name;
-        this._utilService.loggedInUserId = res.data.id;
+
+  private subscribeToUserChannel() {
+    this._pusherService.subcribeToChannelE.subscribe(
+      (cName: string[]) => {
+        this._pusherService.initializePusher();
+        cName.forEach(
+          (name: string) => {
+            this.channel = this._pusherService.subscribeToChannel(name);
+            this.channel.bind('my-event', (data: MessageI) => {
+              this._pusherService.messageReceivedE.emit(data);
+            })
+          }
+        )
       }
     )
   }

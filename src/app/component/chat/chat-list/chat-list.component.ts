@@ -1,6 +1,6 @@
-import { Component, ElementRef, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ChatBoxI } from '../../../model/chat.model';
-import { ResponseIterableI } from '../../../response/responseG.response';
+import { IResponseG, ResponseIterableI } from '../../../response/responseG.response';
 import { ComponentBase } from '../../../shared/class/ComponentBase.class';
 import { UtilService } from '../../../../services/util.service';
 import { APIRoutes } from '../../../shared/constants/apiRoutes.constant';
@@ -9,6 +9,7 @@ import { IGetAllUser } from '../../../response/user.response';
 import { IEmplyeeOptions } from '../../../model/option.model';
 import { Subject, debounceTime, takeUntil } from 'rxjs';
 import { PusherService } from '../../../../services/pusher.service';
+import { ConfirmationComponent } from '../../../shared/component/confirmation/confirmation.component';
 
 @Component({
   selector: 'app-chat-list',
@@ -16,6 +17,8 @@ import { PusherService } from '../../../../services/pusher.service';
   styleUrl: './chat-list.component.scss'
 })
 export class ChatListComponent extends ComponentBase implements OnInit, OnDestroy {
+
+  @ViewChild(ConfirmationComponent) ConfirmationComponentObj!: ConfirmationComponent;
 
   public userChatList: ChatBoxI[] = [];
   public allUserList: IGetAllUser[] = [];
@@ -35,7 +38,6 @@ export class ChatListComponent extends ComponentBase implements OnInit, OnDestro
 
   constructor(public _utilService: UtilService, private _pusherService: PusherService) {
     super();
-
 
     this._utilService.refreshChatListE.subscribe(
       (res) => {
@@ -65,11 +67,13 @@ export class ChatListComponent extends ComponentBase implements OnInit, OnDestro
       (res) => {
         this._utilService.loggedInUserId = res.data.id;
         this._utilService.loggedInUserName = res.data.name;
+
+        // for creating channel
+        this.getAllUser();
+
         this.getChatBox();
       }
     )
-
-
 
     this.userSearchSubject.pipe(
       debounceTime(0),
@@ -97,6 +101,28 @@ export class ChatListComponent extends ComponentBase implements OnInit, OnDestro
     }
     this._utilService.isUserChatAlreadyExists = true;
     this._utilService.userChatEmitter.emit(userChat);
+  }
+
+  public deleteConversationById(event: MouseEvent, receiverId: number) {
+    event.stopPropagation();
+
+    this.ConfirmationComponentObj.openModal("Delete Chat", "Do you want to delete it permanently ?").then(
+      (res: boolean) => {
+        if (res) {
+          this.deleteAPICallPromise<null, IResponseG<null>>(APIRoutes.deleteConversationById(receiverId), null, this.headerOption).then(
+            (res) => {
+              if(this._utilService.currentOpenedChat == receiverId){
+                this._utilService.currentOpenedChat = -1;
+                this._utilService.chatClickedE.emit(-1);
+              }
+              this.getChatBox();
+              this._toastreService.success(res.message);
+            }
+          )
+        }
+      }
+    )
+
   }
 
   public onArrowDown() {
@@ -151,20 +177,20 @@ export class ChatListComponent extends ComponentBase implements OnInit, OnDestro
     this.getAPICallPromise<ResponseIterableI<ChatBoxI[]>>(APIRoutes.getChatBox, this.headerOption).then(
       (res) => {
         this.userChatList = res.iterableData;
-        let channelList: string[] = [];
-        this.userChatList.forEach(
-          (user) =>{
-            let cName: string = '';
-            if(user.recieverId < this._utilService.loggedInUserId){
-              cName = `${user.recieverId}-${this._utilService.loggedInUserId}`;
-            }
-            else{
-              cName = `${this._utilService.loggedInUserId}-${user.recieverId}`;
-            }
-            channelList.push(cName);
-          }
-        );
-        this._pusherService.subcribeToChannelE.emit(channelList);
+        // let channelList: string[] = [];
+        // this.userChatList.forEach(
+        //   (user) =>{
+        //     let cName: string = '';
+        //     if(user.recieverId < this._utilService.loggedInUserId){
+        //       cName = `${user.recieverId}-${this._utilService.loggedInUserId}`;
+        //     }
+        //     else{
+        //       cName = `${this._utilService.loggedInUserId}-${user.recieverId}`;
+        //     }
+        //     channelList.push(cName);
+        //   }
+        // );
+        // this._pusherService.subcribeToChannelE.emit(channelList);
       }
     )
   }
@@ -227,6 +253,33 @@ export class ChatListComponent extends ComponentBase implements OnInit, OnDestro
     )
   }
 
+
+  private getAllUser() {
+    this.options.isPagination = false;
+    this.options.search = "";
+    this.options.index = 0;
+
+    this._utilService.search(this.options).subscribe(
+      (res) => {
+        let data: IGetAllUser[] = [];
+        data = res.iterableData
+        let channelList: string[] = [];
+        data.forEach(
+          (user) => {
+            let cName: string = '';
+            if (user.id < this._utilService.loggedInUserId) {
+              cName = `${user.id}-${this._utilService.loggedInUserId}`;
+            }
+            else {
+              cName = `${this._utilService.loggedInUserId}-${user.id}`;
+            }
+            channelList.push(cName);
+          }
+        );
+        this._pusherService.subcribeToChannelE.emit(channelList);
+      }
+    )
+  }
 
 
   @HostListener('document:click', ['$event'])

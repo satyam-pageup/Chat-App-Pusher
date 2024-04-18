@@ -12,7 +12,7 @@ export interface ResponseDataI<T>{
     data: T;
     token: string;
 }
-export interface GetLoggedInUserDetailI<T>{
+export interface IResponseG<T>{
     status: string;
     message: string;
     statusCode: string;

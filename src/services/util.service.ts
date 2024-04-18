@@ -3,7 +3,7 @@ import { ChatBoxI } from '../app/model/chat.model';
 import { NumberString } from '../app/model/util.model';
 import { IGetAllUser, UserI } from '../app/response/user.response';
 import { ComponentBase } from '../app/shared/class/ComponentBase.class';
-import { GetLoggedInUserDetailI, ResponseIterableI } from '../app/response/responseG.response';
+import { IResponseG, ResponseIterableI } from '../app/response/responseG.response';
 import { APIRoutes } from '../app/shared/constants/apiRoutes.constant';
 
 @Injectable({
@@ -29,7 +29,7 @@ export class UtilService extends ComponentBase {
   public currentOpenedChat: number = -1;
 
   public getLoggedInUserDetialsF() {
-    return this.getAPICallPromise<GetLoggedInUserDetailI<UserI>>('/userDetails', this.headerOption);
+    return this.getAPICallPromise<IResponseG<UserI>>('/userDetails', this.headerOption);
   }
 
   search(payload: any) {

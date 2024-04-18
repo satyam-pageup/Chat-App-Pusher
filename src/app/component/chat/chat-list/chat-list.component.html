@@ -16,7 +16,7 @@
 
 
     <div class="list-group">
-        <a *ngFor="let chat of userChatList; let i=index" class="list-group-item list-group-item-action c-p-s"
+        <div *ngFor="let chat of userChatList; let i=index" class="list-group-item list-group-item-action c-p-s"
             aria-current="true">
 
             <div (click)="getChats(chat.recieverId,chat.recieverName, chat)" class="show-option">
@@ -35,13 +35,16 @@
                     <p class="mb-1"  style="overflow: hidden;">{{chat.lastMessage}}</p>
                     <i class='bx bx-chevron-down'>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item"><i class="bx bx-trash"></i>Delete</a></li>
+                            <li  (click)="deleteConversationById($event, chat.recieverId)"><a class="dropdown-item"><i class="bx bx-trash"></i>Delete</a></li>
                             <li><a class="dropdown-item"> <i class='bx bxs-volume-mute'></i>Muted</a></li>
                         </ul>
                     </i>
                 </div>
             </div>
-        </a>
+        </div>
 
     </div>
 </div>
+
+
+<app-confirmation></app-confirmation>

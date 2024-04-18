@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, HostListener, OnInit, QueryList, ViewChild, ViewChildren, viewChild } from '@angular/core';
-import { GetLoggedInUserDetailI, GetMessageI, ResponseGI } from '../../../response/responseG.response';
+import { IResponseG, GetMessageI } from '../../../response/responseG.response';
 import { ChatBoxI, MessageI } from '../../../model/chat.model';
 import { GetMessagePaginationI } from '../../../model/pagination.model';
 import { ComponentBase } from '../../../shared/class/ComponentBase.class';
@@ -11,6 +11,7 @@ import { ConfirmationComponent } from '../../../shared/component/confirmation/co
 import { FormControl } from '@angular/forms';
 import { ConvertToBase } from '../../../shared/class/ConvertoBase64.class';
 import { NumberString } from '../../../model/util.model';
+import { PusherService } from '../../../../services/pusher.service';
 
 @Component({
   selector: 'app-chat-box',
@@ -42,8 +43,6 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
   public message: string = '';
   private receiverStystemToken: string = '';
   public userDetail: ChatBoxI = {
-    // employeeId: 0,
-    // employeeName: '',
     lastMessage: '',
     lastMessageDate: '',
     isSeen: false,
@@ -52,6 +51,7 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
     recieverName: '',
     lastActive: '',
   };
+
   // for media and document uplaod
   public documentFormControl: FormControl = new FormControl(null);
   public mediaFormControl: FormControl = new FormControl(null);
@@ -65,57 +65,14 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
   public showEmojiPicker: boolean = false;
   public userBlockState: string = '';
 
-  constructor(public _utilService: UtilService, private firebaseService: FirebaseService, private elementRef: ElementRef) {
+  constructor(public _utilService: UtilService, private firebaseService: FirebaseService,
+    private elementRef: ElementRef, private _pusherService: PusherService) {
     super();
     this.isSearchedUserChat = false;
-    _utilService.chatClickedE.subscribe(
-      (id: number) => {
-        this.recevierId = id;
-        this.getChatByIdListen(id);
-        if (id > -1)
-          this.showChatMessages = true;
-        else
-          this.showChatMessages = false;
-      }
-    )
   }
 
   ngOnInit(): void {
-    this._utilService.getChatByIdE.subscribe(
-      (receiverId: number) => {
-        this._utilService.receiverId = receiverId;
-        this.recevierId = receiverId;
-        this.options.index = 0;
-        this.getChatById();
-      }
-    )
-
-    this._utilService.isListennotificationE.subscribe(
-      (data: NumberString) => {
-        this.getChatByIdListen(data.id);
-      }
-    )
-
-    this._utilService.userChatEmitter.subscribe((res) => {
-      this.recevierId = res.id;
-      this._utilService.currentOpenedChat = res.id;
-      this.options.index = 0;
-      this.Name = res.name;
-      this.postAPICallPromise<GetMessagePaginationI, GetMessageI<MessageI[]>>(APIRoutes.getMessageById(res.id), this.options, this.headerOption).then(
-        (res) => {
-          this.showChatMessages = true;
-          this.messageList = res.data.data;
-          this.receiverStystemToken = res.data.systemToken;
-          this.isScrollToBottom = true;
-          if (res.data.isBlockedUser) {
-            this.userBlockState = "Unblock"
-          }
-          else {
-            this.userBlockState = "Block"
-          }
-        }
-      )
-    })
+    this.subcritpionF();
   }
 
   ngAfterViewInit() {
@@ -147,7 +104,7 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
     )
   }
 
-  
+
   public onEnterKeyDown(event: any) {
     event.preventDefault(); // Prevent default Enter key behavior
     this.sendMessage(); // Call your sendMessage function
@@ -163,16 +120,16 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
         message: this.message.trim()
       }
 
-      this.postAPICallPromise<{ message: string }, GetLoggedInUserDetailI<null>>(APIRoutes.sendMessage(this.recevierId), data, this.headerOption).then(
-        () => {
+      this.postAPICallPromise<{ message: string }, IResponseG<MessageI>>(APIRoutes.sendMessage(this.recevierId), data, this.headerOption).then(
+        (res) => {
           if (this._utilService.isUserChatAlreadyExists) {
             this._utilService.updateChatOnSendingMsgE.emit(data.message);
           }
           else {
             this._utilService.refreshChatListE.emit(true);
           }
-          
-          this.getChatByIdListen(this.recevierId);
+          this.isScrollToBottom = true;
+          this.messageList.push(res.data);
           this.firebaseService.sendNotification({ receiverSystemToken: this.receiverStystemToken, title: "WhatsApp", body: data.message }, this._utilService.loggedInUserId);
         }
       )
@@ -197,7 +154,7 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
             recieverId: this.recevierId
           }
 
-          this.deleteAPICallPromise<{ ids: number[] }, GetLoggedInUserDetailI<null>>(APIRoutes.deleteMessage, msgtoDlt, this.headerOption).then(
+          this.deleteAPICallPromise<{ ids: number[] }, IResponseG<null>>(APIRoutes.deleteMessage, msgtoDlt, this.headerOption).then(
             (res) => {
               this.messageList.splice(index, 1);
               this.isScrollToBottom = true;
@@ -215,7 +172,7 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
       this.ConfirmationComponentObj.openModal(`${this.userBlockState}`, message).then(
         (res: boolean) => {
           if (res) {
-            this.postAPICallPromise<number, GetLoggedInUserDetailI<null>>(APIRoutes.blockUser(this.recevierId), this.recevierId, this.headerOption).then(
+            this.postAPICallPromise<number, IResponseG<null>>(APIRoutes.blockUser(this.recevierId), this.recevierId, this.headerOption).then(
               (res) => {
                 if (res.status) {
                   this.userBlockState = 'Unblock';
@@ -235,7 +192,7 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
       this.ConfirmationComponentObj.openModal(`${this.userBlockState}`, message).then(
         (res: boolean) => {
           if (res) {
-            this.postAPICallPromise<number, GetLoggedInUserDetailI<null>>(APIRoutes.unBlockUser(this.recevierId), this.recevierId, this.headerOption).then(
+            this.postAPICallPromise<number, IResponseG<null>>(APIRoutes.unBlockUser(this.recevierId), this.recevierId, this.headerOption).then(
               (res) => {
                 if (res.status) {
                   this.userBlockState = 'Block';
@@ -247,6 +204,109 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
               }
             )
           }
+        }
+      )
+    }
+  }
+
+  public toggleEmojiPicker() {
+    this.showEmojiPicker = !this.showEmojiPicker;
+  }
+
+  public addEmoji(event: any) {
+    const { message } = this;
+    const text = `${message}${event.emoji.native}`;
+    this.message = text;
+  }
+
+
+  @HostListener('document:click', ['$event'])
+  public handleClick(event: MouseEvent) {
+    const clickedElement = event.target as HTMLElement;
+    const emojiIcon = this.elementRef.nativeElement.querySelector('.bx-smile');
+    const emojiContainer = this.elementRef.nativeElement.querySelector('.emoji-container');
+    if (!emojiIcon || (!emojiIcon.contains(clickedElement) && (!emojiContainer || !emojiContainer.contains(clickedElement)))) {
+      this.showEmojiPicker = false;
+    }
+  }
+
+
+  private subcritpionF() {
+    this._utilService.chatClickedE.subscribe(
+      (id: number) => {
+        this.recevierId = id;
+        this.getChatByIdListen(id);
+        if (id > -1)
+          this.showChatMessages = true;
+        else
+          this.showChatMessages = false;
+      }
+    )
+
+    this._utilService.getChatByIdE.subscribe(
+      (receiverId: number) => {
+        this._utilService.receiverId = receiverId;
+        this.recevierId = receiverId;
+        this.options.index = 0;
+        this.getChatById();
+      }
+    )
+
+    this._utilService.isListennotificationE.subscribe(
+      (data: NumberString) => {
+        this.getChatByIdListen(data.id);
+      }
+    )
+
+    this.userChatEmitterSubcribedF();
+
+    this._pusherService.messageReceivedE.subscribe((msg: MessageI) => {
+      if (msg.senderId != this._utilService.loggedInUserId) {
+        this.isScrollToBottom = true;
+        this.messageList.push(msg);
+      }
+    })
+  }
+
+
+
+
+  private userChatEmitterSubcribedF() {
+    this._utilService.userChatEmitter.subscribe((res) => {
+      this.recevierId = res.id;
+      this._utilService.currentOpenedChat = res.id;
+      this.options.index = 0;
+      this.Name = res.name;
+
+      this.postAPICallPromise<GetMessagePaginationI, GetMessageI<MessageI[]>>(APIRoutes.getMessageById(res.id), this.options, this.headerOption).then(
+        (res) => {
+          this.showChatMessages = true;
+          this.messageList = res.data.data;
+          this.receiverStystemToken = res.data.systemToken;
+          this.isScrollToBottom = true;
+          if (res.data.isBlockedUser) {
+            this.userBlockState = "Unblock"
+          }
+          else {
+            this.userBlockState = "Block"
+          }
+        }
+      )
+    })
+  }
+
+  private getChatById() {
+    if (this._utilService.currentOpenedChat != -1) {
+      this.postAPICallPromise<GetMessagePaginationI, GetMessageI<MessageI[]>>(APIRoutes.getMessageById(this._utilService.currentOpenedChat), this.options, this.headerOption).then(
+        (res) => {
+          if (this.isSendMsg) {
+            this.messageList = [];
+            this.isSendMsg = false;
+          }
+          for (let i = res.data.data.length - 1; i > -1; i--) {
+            this.messageList.unshift(res.data.data[i]);
+          }
+          this.receiverStystemToken = res.data.systemToken;
         }
       )
     }
@@ -278,23 +338,6 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
     this.preScrollH = this.scrollContainer.scrollHeight;
   }
 
-  private getChatById() {
-    if (this._utilService.currentOpenedChat != -1) {
-      this.postAPICallPromise<GetMessagePaginationI, GetMessageI<MessageI[]>>(APIRoutes.getMessageById(this._utilService.currentOpenedChat), this.options, this.headerOption).then(
-        (res) => {
-          if (this.isSendMsg) {
-            this.messageList = [];
-            this.isSendMsg = false;
-          }
-          for (let i = res.data.data.length - 1; i > -1; i--) {
-            this.messageList.unshift(res.data.data[i]);
-          }
-          this.receiverStystemToken = res.data.systemToken;
-        }
-      )
-    }
-  }
-
   private getChatByIdListen(id: number) {
     this.options.index = 0;
     if (this._utilService.currentOpenedChat != -1) {
@@ -313,28 +356,6 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
       )
     }
   }
-
-  public toggleEmojiPicker() {
-    this.showEmojiPicker = !this.showEmojiPicker;
-  }
-
-  public addEmoji(event: any) {
-    const { message } = this;
-    const text = `${message}${event.emoji.native}`;
-    this.message = text;
-  }
-
-
-  @HostListener('document:click', ['$event'])
-  public handleClick(event: MouseEvent) {
-    const clickedElement = event.target as HTMLElement;
-    const emojiIcon = this.elementRef.nativeElement.querySelector('.bx-smile');
-    const emojiContainer = this.elementRef.nativeElement.querySelector('.emoji-container');
-    if (!emojiIcon || (!emojiIcon.contains(clickedElement) && (!emojiContainer || !emojiContainer.contains(clickedElement)))) {
-      this.showEmojiPicker = false;
-    }
-  }
-
 }
 
 
