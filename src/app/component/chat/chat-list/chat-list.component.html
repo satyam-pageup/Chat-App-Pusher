@@ -21,7 +21,7 @@
 
             <div (click)="getChats(chat.recieverId,chat.recieverName, chat)" class="show-option">
                 <div class="d-flex w-100 justify-content-between">
-                    <h5 class="mb-1">{{chat.recieverName}}</h5>
+                    <h5 class="mb-1">{{chat.recieverName}}, {{chat.recieverId}}</h5>
 
                     @if (chat.newMessages > 0) {
                     <span class="badge bg-primary rounded-pill">{{chat.newMessages}}</span>

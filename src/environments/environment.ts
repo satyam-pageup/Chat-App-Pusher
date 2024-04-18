@@ -12,5 +12,9 @@ export const environment = {
       },
       baseUrl: "http://192.168.29.154:2030/api",
     //   baseUrl: "/api",
-      tokenName:"jwtToken"
+      tokenName:"jwtToken",
+
+    pusher: {
+      key: "aabb1e5220a0270ec3ed"
+    }
   };
