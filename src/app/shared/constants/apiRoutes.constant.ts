@@ -4,7 +4,7 @@ export const APIRoutes = {
     register: "/registration",
     login: '/user/login',
     updateSystemToken: '/UpdateSystemToken',
-    getChatBox: '/CommunityMessage/GetChatBox',
+    getChatList: '/CommunityMessage/GetChatBox',
     deleteMessage: '/CommunityMessage/DeleteMessage',
     getAllEmployee: '/UserEmployees',
     blockUser:(receiverId: number) => `/BlockUser/BlockUser/${receiverId}`,

@@ -1,5 +1,5 @@
 import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { ChatBoxI } from '../../../model/chat.model';
+import { ChatBoxI, MessageI } from '../../../model/chat.model';
 import { IResponseG, ResponseIterableI } from '../../../response/responseG.response';
 import { ComponentBase } from '../../../shared/class/ComponentBase.class';
 import { UtilService } from '../../../../services/util.service';
@@ -39,26 +39,23 @@ export class ChatListComponent extends ComponentBase implements OnInit, OnDestro
   constructor(public _utilService: UtilService, private _pusherService: PusherService) {
     super();
 
-    this._utilService.refreshChatListE.subscribe(
-      (res) => {
-        this.getChatBox();
-      }
-    )
+    _utilService.UserPresenceCheckInChatListE.subscribe((msg: MessageI) =>{
+      let isUserChatAlreadyExists: boolean = false;
 
-    this._utilService.isListennotificationE.subscribe(
-      (data: NumberString) => {
-        this.updateOpenedChat(data);
+      for(let i=0; i<this.userChatList.length; i++){
+        if(this.userChatList[i].recieverId == msg.senderId){
+          isUserChatAlreadyExists = true;
+          this.userChatList[i].lastMessage = msg.message;
+          this.userChatList[i].lastMessageDate = msg.messageDate;
+          this.userChatList[i].newMessages ++;
+          this.bringChatToTop(this.userChatList[i], i);
+          break;
+        }
       }
-    )
 
-    this._utilService.updateChatOnNotificationE.subscribe(
-      (data: NumberString) => {
-        this.increaseChatCountF(data);
+      if(!isUserChatAlreadyExists){
+        this.getChatList();
       }
-    )
-
-    this._utilService.updateChatOnSendingMsgE.subscribe((msg: string) => {
-      this.updateChatOnSendingMsgF(msg);
     })
   }
 
@@ -71,7 +68,7 @@ export class ChatListComponent extends ComponentBase implements OnInit, OnDestro
         // for creating channel
         this.getAllUser();
 
-        this.getChatBox();
+        this.getChatList();
       }
     )
 
@@ -80,6 +77,10 @@ export class ChatListComponent extends ComponentBase implements OnInit, OnDestro
     ).subscribe(
       (userName) => {
         this.onDestroy$.next();
+        if(userName == ""){
+          this.searchResult = [];
+          return;
+        }
         this.options.search = userName;
         this._utilService.search(this.options).pipe(
           takeUntil(this.onDestroy$),
@@ -90,6 +91,37 @@ export class ChatListComponent extends ComponentBase implements OnInit, OnDestro
         )
       }
     )
+
+    // this._pusherService.messageReceivedE.subscribe((msg: MessageI) => {
+    //   let isChatAlreadyExists;
+    //   isChatAlreadyExists = false
+
+    //   for (let i = 0; i < this.userChatList.length; i++) {
+    //     if (this.userChatList[i].recieverId == msg.senderId) {
+    //       isChatAlreadyExists = true;
+    //       this.userChatList[i].lastMessage = msg.message;
+    //       this.userChatList[i].lastMessageDate = msg.messageDate
+
+    //       if (this.userChatList[i].recieverId != this._utilService.currentOpenedChat) {
+    //         this.userChatList[i].newMessages++;
+    //       }
+
+    //       this.bringChatToTop(this.userChatList[i], i);
+    //       break;
+    //     }
+    //   };
+
+    //   if (!isChatAlreadyExists) {
+    //     console.log("isChatAlreadyExists");
+    //     this.getChatBox();
+    //   }
+    // })
+  }
+
+
+  private bringChatToTop(chat: ChatBoxI, index: number) {
+    this.userChatList.splice(index, 1);
+    this.userChatList.unshift(chat);
   }
 
 
@@ -111,11 +143,11 @@ export class ChatListComponent extends ComponentBase implements OnInit, OnDestro
         if (res) {
           this.deleteAPICallPromise<null, IResponseG<null>>(APIRoutes.deleteConversationById(receiverId), null, this.headerOption).then(
             (res) => {
-              if(this._utilService.currentOpenedChat == receiverId){
+              if (this._utilService.currentOpenedChat == receiverId) {
                 this._utilService.currentOpenedChat = -1;
                 this._utilService.chatClickedE.emit(-1);
               }
-              this.getChatBox();
+              this.getChatList();
               this._toastreService.success(res.message);
             }
           )
@@ -154,6 +186,10 @@ export class ChatListComponent extends ComponentBase implements OnInit, OnDestro
       name
     }
 
+    this._utilService.userChatEmitter.emit(obj);
+    this.searchResult = [];
+    this.searchUser = "";
+
     for (let i = 0; i < this.userChatList.length; i++) {
       if (this.userChatList[i].recieverId == obj.id) {
         this._utilService.isUserChatAlreadyExists = true;
@@ -164,70 +200,22 @@ export class ChatListComponent extends ComponentBase implements OnInit, OnDestro
       }
     }
 
-    this._utilService.userChatEmitter.emit(obj);
-    this.searchResult = [];
-    this.searchUser = "";
   }
 
   public onSearchUser() {
     this.userSearchSubject.next(this.searchUser);
   }
 
-  private getChatBox() {
-    this.getAPICallPromise<ResponseIterableI<ChatBoxI[]>>(APIRoutes.getChatBox, this.headerOption).then(
+  private getChatList() {
+    this.getAPICallPromise<ResponseIterableI<ChatBoxI[]>>(APIRoutes.getChatList, this.headerOption).then(
       (res) => {
         this.userChatList = res.iterableData;
-        // let channelList: string[] = [];
-        // this.userChatList.forEach(
-        //   (user) =>{
-        //     let cName: string = '';
-        //     if(user.recieverId < this._utilService.loggedInUserId){
-        //       cName = `${user.recieverId}-${this._utilService.loggedInUserId}`;
-        //     }
-        //     else{
-        //       cName = `${this._utilService.loggedInUserId}-${user.recieverId}`;
-        //     }
-        //     channelList.push(cName);
-        //   }
-        // );
-        // this._pusherService.subcribeToChannelE.emit(channelList);
       }
     )
   }
 
-
-  private updateChatOnSendingMsgF(msg: string) {
-    this.updateChatG(this._utilService.currentOpenedChat, msg);
-
-    // const currentDateUTC = new Date().toISOString();
-    // this.userChatList.forEach(
-    //   (userChat, i) => {
-    //     if (userChat.recieverId == this._utilService.currentOpenedChat) {
-    //       userChat.lastMessage = str;
-    //       userChat.lastMessageDate = currentDateUTC;
-    //       const newChat = userChat;
-    //       this.userChatList.splice(i, 1);
-    //       this.userChatList.unshift(newChat);
-    //     }
-    //   }
-    // )
-  }
-
   private updateOpenedChat(data: NumberString) {
-
     this.updateChatG(data.id, data.data);
-    // const currentDateUTC = new Date().toISOString();
-    // this.userChatList.forEach(
-    //   (userChat, i) => {
-    //     if (userChat.recieverId == data.id) {
-    //       userChat.lastMessage = data.data;
-    //       userChat.lastMessageDate = currentDateUTC;
-    //       const newChat = userChat;
-    //       this.userChatList.splice(i, 1);
-    //       this.userChatList.unshift(newChat);
-    //     }
-    //   }
-    // )
   }
 
   private updateChatG(id: number, data: string) {
@@ -246,7 +234,7 @@ export class ChatListComponent extends ComponentBase implements OnInit, OnDestro
   }
 
   private increaseChatCountF(data: NumberString) {
-    this.getAPICallPromise<ResponseIterableI<ChatBoxI[]>>(APIRoutes.getChatBox, this.headerOption).then(
+    this.getAPICallPromise<ResponseIterableI<ChatBoxI[]>>(APIRoutes.getChatList, this.headerOption).then(
       (res) => {
         this.userChatList = res.iterableData;
       }

@@ -106,8 +106,8 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
 
 
   public onEnterKeyDown(event: any) {
-    event.preventDefault(); // Prevent default Enter key behavior
-    this.sendMessage(); // Call your sendMessage function
+    event.preventDefault();
+    this.sendMessage();
   }
 
   public sendMessage() {
@@ -122,13 +122,6 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
 
       this.postAPICallPromise<{ message: string }, IResponseG<MessageI>>(APIRoutes.sendMessage(this.recevierId), data, this.headerOption).then(
         (res) => {
-          if (this._utilService.isUserChatAlreadyExists) {
-            this._utilService.updateChatOnSendingMsgE.emit(data.message);
-          }
-          else {
-            this._utilService.refreshChatListE.emit(true);
-          }
-          this.isScrollToBottom = true;
           this.messageList.push(res.data);
           this.firebaseService.sendNotification({ receiverSystemToken: this.receiverStystemToken, title: "WhatsApp", body: data.message }, this._utilService.loggedInUserId);
         }
@@ -243,27 +236,17 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
       }
     )
 
-    this._utilService.getChatByIdE.subscribe(
-      (receiverId: number) => {
-        this._utilService.receiverId = receiverId;
-        this.recevierId = receiverId;
-        this.options.index = 0;
-        this.getChatById();
-      }
-    )
-
-    this._utilService.isListennotificationE.subscribe(
-      (data: NumberString) => {
-        this.getChatByIdListen(data.id);
-      }
-    )
-
     this.userChatEmitterSubcribedF();
 
     this._pusherService.messageReceivedE.subscribe((msg: MessageI) => {
-      if (msg.senderId != this._utilService.loggedInUserId) {
+      if (msg.senderId == this._utilService.currentOpenedChat) {
         this.isScrollToBottom = true;
         this.messageList.push(msg);
+      }
+      else{
+        if(msg.senderId != this._utilService.loggedInUserId){
+          this._utilService.UserPresenceCheckInChatListE.emit(msg);
+        }
       }
     })
   }

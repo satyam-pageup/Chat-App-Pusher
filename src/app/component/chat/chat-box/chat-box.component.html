@@ -101,9 +101,6 @@
                             </ul>
                         </div>
 
-                        <!-- <input type="text" placeholder="Type a message" [(ngModel)]="message"
-                            (keydown.enter)="sendMessage()"> -->
-
                         <textarea rows="1" [(ngModel)]="message" (keydown.enter)="onEnterKeyDown($event)"></textarea>
                         <i class='bx bx-send' (click)="sendMessage()"></i>
                     </div>

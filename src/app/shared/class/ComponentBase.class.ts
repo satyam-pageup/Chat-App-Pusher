@@ -8,8 +8,6 @@ import { environment } from "../../../environments/environment";
 
 export class ComponentBase {
 
-    // public getChatByIdE: EventEmitter<number> = new EventEmitter<number>(); 
-
     public baseUrl: string = environment.baseUrl;
     public isBtnLoaderActive: boolean = false;
 

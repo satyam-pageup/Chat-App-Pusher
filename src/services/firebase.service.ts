@@ -5,7 +5,6 @@ import { ComponentBase } from '../app/shared/class/ComponentBase.class';
 import { IResponseG } from '../app/response/responseG.response';
 import { APIRoutes } from '../app/shared/constants/apiRoutes.constant';
 import { INotificationModel, NotificationResponse } from '../app/model/notification.model';
-import { UtilService } from './util.service';
 import { NumberString } from '../app/model/util.model';
 
 @Injectable({
@@ -13,7 +12,7 @@ import { NumberString } from '../app/model/util.model';
 })
 export class FirebaseService extends ComponentBase {
 
-  constructor(private _utilService: UtilService) {
+  constructor() {
     super();
   }
 
@@ -48,13 +47,6 @@ export class FirebaseService extends ComponentBase {
         id: senderID,
         data: nofication.notification.body
       }
-
-      // if (this._utilService.currentOpenedChat == senderID) {
-      //   this._utilService.isListennotificationE.emit(data);
-      // }
-      // else {
-      //   this._utilService.updateChatOnNotificationE.emit(data);
-      // }
     });
   }
 
@@ -73,14 +65,17 @@ export class FirebaseService extends ComponentBase {
       to: obj.receiverSystemToken
     }
 
-    fetch(url, {
-      method: 'POST',
-      headers: {
-        'Authorization': 'key=AAAA5N9GikU:APA91bE6i7bh3atMvh671HBpD7ab3H6BHG9qbwJHpNOeING93nOfRCHt-XHdoGFcOujelFyN1EGleLaWoCFquNQxRkWFLwM6d_PIoloeJh7Ngtw2J0z5kOufWtx8Lz3OLIHTx7in8oD1',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(newMsg)
-    })
+    if (obj.receiverSystemToken != null) {
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'Authorization': 'key=AAAA5N9GikU:APA91bE6i7bh3atMvh671HBpD7ab3H6BHG9qbwJHpNOeING93nOfRCHt-XHdoGFcOujelFyN1EGleLaWoCFquNQxRkWFLwM6d_PIoloeJh7Ngtw2J0z5kOufWtx8Lz3OLIHTx7in8oD1',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(newMsg)
+      })
+    }
+
   }
 
   private saveToken(token: string) {
