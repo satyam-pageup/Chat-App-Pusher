@@ -27,12 +27,12 @@
                     <span class="badge bg-primary rounded-pill">{{chat.newMessages}}</span>
                     }
                     @else{
-                    <span>{{chat.lastMessageDate| utcToIndianTime }}</span>
+                    <span>{{chat.lastMessageDate | utcToIndianTime }}</span>
                     }
 
                 </div>
                 <div class="d-flex justify-content-between">
-                    <p class="mb-1"  style="overflow: hidden;">{{chat.lastMessage}}</p>
+                    <p class="mb-1 truncate">{{chat.lastMessage}}</p>
                     <i class='bx bx-chevron-down'>
                         <ul class="dropdown-menu">
                             <li  (click)="deleteConversationById($event, chat.recieverId)"><a class="dropdown-item"><i class="bx bx-trash"></i>Delete</a></li>
