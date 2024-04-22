@@ -113,6 +113,7 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
   }
 
   public sendMessage(index: number) {
+
     // this._pusherService.triggerUserChatChannel('active');
     this.showEmojiPicker = false;
     this.isScrollToBottom = true;
@@ -137,6 +138,8 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
       this._httpClient.post<IResponseG<MessageI>>(hitUrl, data).subscribe({
         next: (res) => {
           this.messageList[index].status = "success";
+          this.messageList[index].id = res.data.id;
+          this.messageList[index].messageDate = res.data.messageDate;
           this.firebaseService.sendNotification({ receiverSystemToken: this.receiverStystemToken, title: "WhatsApp", body: data.message }, this._utilService.loggedInUserId);
         },
         error: (err) => {
