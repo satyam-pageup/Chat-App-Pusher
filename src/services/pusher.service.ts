@@ -7,7 +7,7 @@ import { MessageI } from '../app/model/chat.model';
   providedIn: 'root'
 })
 export class PusherService {
-  public pusher: any;
+  public pusher: Pusher = new Pusher(environment.pusher.key, { cluster: 'ap2' });
   public messagesChannel: any;
   public activeUserChannel: any;
   public activeUserChannelPusher: any;
@@ -17,16 +17,29 @@ export class PusherService {
 
   constructor() {
     Pusher.logToConsole = true;
-    this.initializePusher();
+    // this.initializePusher();
   }
-
-  initializePusher(): void {
-    this.pusher = new Pusher(environment.pusher.key, { cluster: 'ap2' });
-  }
+  
+  // initializePusher(): void {
+  //   this.pusher = new Pusher(environment.pusher.key, { cluster: 'ap2' });
+  // }
 
   public subscribeToChannel(channelName: string) {
     return this.pusher.subscribe(channelName);
   }
+
+  
+  // triggerEvent(channelName: string, eventName: string, eventData: any) {
+  //   this.pusher.subscribe(channelName).trigger(eventName, eventData);
+  // }
+
+  triggerEvent(channelName: string, eventName: string, eventData: any) {
+    const channel = this.pusher.subscribe(channelName);
+    channel.trigger(`client-${eventName}`, eventData); // Ensure event name starts with 'client-'
+  }
+  
+  // const channel = this.pusher.subscribe(channelName).trigger(`client-${eventName}`, eventData);
+  // channel.trigger(`client-${eventName}`, eventData);
 
 
 

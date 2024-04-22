@@ -268,14 +268,20 @@ input[type="file"] {
 
 .selected-file-div-s {
   display: flex;
-  width: 60%;
-  background-color: #f3252569;
+  width: 55%;
+  background-color:rgb(201 201 201 / 41%);
   height: 34px;
   border-radius: 11px;
   padding: 20px;
   justify-content: space-between;
   align-items: center;
   // border: 1px solid #cabebe;
+  min-height: 111px;
+
+  img{
+    width: 100px;
+    height: 100px;
+  }
 }
 
 .c-p {

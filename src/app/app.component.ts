@@ -42,13 +42,14 @@ export class AppComponent extends ComponentBase implements OnInit {
           this.showChatMessages = false;
       }
     )
-
+    this.subscribeChannelOfUser();
     this.subscribeChannelByName("chat-channel");
   }
 
   ngOnInit(): void {
     if (localStorage.getItem("jwtToken")) {
       this.showChatMessages = true;
+      this._route.navigate(['/chat']);
     }
   }
 
@@ -60,11 +61,18 @@ export class AppComponent extends ComponentBase implements OnInit {
 
   private subscribeChannelByName(channelName: string) {
     this.channel = this._pusherService.subscribeToChannel(channelName);
-
     this.channel.bind('my-event', (data: MessageI) => {
       this._pusherService.messageReceivedE.emit(data);
     });
   }
+
+  private subscribeChannelOfUser() {
+    this.userActiveChannel = this._pusherService.subscribeToChannel("active-channel");
+    this.userActiveChannel.bind('active-event', (data: any) => { // Bind to 'client-active-event'
+      console.log(data);
+    });
+  }
+  
 
   // private subcribeUserActiveChannel() {
   //   this.userActiveChannel = this._pusherService.subscribeUserChatChannel('heas');
