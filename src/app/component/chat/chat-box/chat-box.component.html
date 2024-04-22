@@ -64,6 +64,7 @@
                     @if (selectedFileName != "") {
                     <div class="selected-file">
                         <div class="selected-file-div-s">
+                            <img [src]="selectedMedia" alt="">
                             {{selectedFileName}}
                             <i class='bx bx-x c-p' style="color: red;"
                                 (click)='selectedFileName="" || selectedDocument="" || selectedMedia=""'></i>
@@ -94,13 +95,13 @@
                                         <i class='bx bx-images'></i>
                                         Photos & Videos
                                         <input id="img-upload" type="file" [formControl]="mediaFormControl"
-                                            (change)="onMediaSelect($event)" [value]="" accept="image/*,video/*" />
+                                            (change)="onMediaSelect($event)" [value]="" accept="image/*,video/*"/>
                                     </label>
                                 </li>
                             </ul>
                         </div>
 
-                        <textarea rows="2" [(ngModel)]="message" (keydown.enter)="onEnterKeyDown($event, messageList.length)"></textarea>
+                        <textarea rows="1" [(ngModel)]="message" (keyup)="autoGrowTextZone($event)" (keydown.enter)="onEnterKeyDown($event, messageList.length)"></textarea>
                         <i class='bx bx-send' (click)="sendMessage(messageList.length)"></i>
                     </div>
                 </div>
