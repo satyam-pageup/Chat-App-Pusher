@@ -23,6 +23,27 @@ export class ConvertToBase {
         return promise;
     }
 
+    public imageObjectToBase64Promise(file: any): Promise<string> {
+
+        const promise = new Promise<string>((resolve, reject) => {
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e: any) => {
+                    const image = new Image();
+                    image.src = e.target.result;
+                    image.onload = () => {
+                        resolve(image.src);
+                    }
+                    image.onerror = () => {
+                        reject("Unable to convert image into base64")
+                    }
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+        return promise;
+    }
+
     public imageFileToBase64Promise(sFile: File): Promise<string> {
 
         const promise = new Promise<string>((resolve, reject) => {
@@ -49,6 +70,25 @@ export class ConvertToBase {
 
         const promise = new Promise<string>((resolve, reject) => {
             const file: File = event.target.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => {
+                    resolve(reader.result as string);
+                };
+                reader.onerror = () => {
+                    reject('failed to convert pdf to base 64');
+                }
+            }
+        });
+        return promise;
+    }
+
+    public pdfObjectToBase64Promise(file: any): Promise<string> {
+
+        const promise = new Promise<string>((resolve, reject) => {
+            // const file: File = event.target.files[0];
 
             if (file) {
                 const reader = new FileReader();

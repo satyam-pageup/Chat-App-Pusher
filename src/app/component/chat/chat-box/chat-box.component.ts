@@ -84,21 +84,36 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
   }
 
   public onMediaSelect(event: any) {
-    console.log("hiuyhui");
-    
     this.selectedDocument = "";
     this.ConvertToBaseobj.imageToBase64Promise(event).then(
       (res: string) => {
         this.selectedMedia = res;
-        console.log(res);
-        
         this.selectedFileName = event.target.files[0].name;
+        event.target.value = null;
       }
     )
   }
 
   public onFileDropped(event: any) {
     this.selectedFileName = event.name;
+    const fileType: string = event.type;
+
+    if (fileType.startsWith('image')) {
+      this.ConvertToBaseobj.imageObjectToBase64Promise(event).then(
+        (res) => {
+          this.selectedMedia = res;
+        }
+      )
+    }
+    else if (fileType.startsWith('application/pdf')) {
+      this.ConvertToBaseobj.pdfObjectToBase64Promise(event).then(
+        (res) => {
+          this.selectedDocument = res;
+          this.selectedMedia = this.staticPdfImage;
+        }
+      )
+    }
+
   }
 
   public onDocumentSelect(event: any) {
@@ -106,7 +121,7 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
     this.ConvertToBaseobj.pdfToBase64Promise(event).then(
       (res: string) => {
         this.selectedDocument = res;
-        this.selectedMedia= this.staticPdfImage;
+        this.selectedMedia = this.staticPdfImage;
         this.selectedFileName = event.target.files[0].name;
       }
     )
