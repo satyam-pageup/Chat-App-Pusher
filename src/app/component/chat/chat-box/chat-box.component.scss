@@ -189,11 +189,9 @@
       border-radius: 7px;
       padding: 10px;
       padding-right: 35px;
-      scrollbar-width: none;
       resize: none;
-      min-height: 2em;
-      max-height: 6em;
-
+      scrollbar-width: thin;
+      max-height: 100px;
     }
 
     textarea:focus-visible {

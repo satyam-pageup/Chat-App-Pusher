@@ -113,8 +113,7 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
   }
 
   public sendMessage(index: number) {
-
-    this._pusherService.triggerUserChatChannel('active');
+    // this._pusherService.triggerUserChatChannel('active');
     this.showEmojiPicker = false;
     this.isScrollToBottom = true;
     this.isSendMsg = true;
@@ -122,8 +121,6 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
       const data: { message: string } = {
         message: this.message.trim()
       }
-
-
       const rMsg: MessageNewI = {
         id: -1,
         message: data.message,
@@ -158,6 +155,11 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
       this.options.index++;
       this.getChatById();
     }
+  }
+
+  autoGrowTextZone(e:any) {
+    e.target.style.height = "0";
+    e.target.style.height = (e.target.scrollHeight )+"px";
   }
 
   public deleteMessage(id: number, index: number) {

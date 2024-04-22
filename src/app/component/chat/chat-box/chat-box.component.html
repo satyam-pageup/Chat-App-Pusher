@@ -100,7 +100,7 @@
                             </ul>
                         </div>
 
-                        <textarea rows="2" [(ngModel)]="message" (keydown.enter)="onEnterKeyDown($event, messageList.length)"></textarea>
+                        <textarea rows="1" [(ngModel)]="message" (keyup)="autoGrowTextZone($event)" (keydown.enter)="onEnterKeyDown($event, messageList.length)"></textarea>
                         <i class='bx bx-send' (click)="sendMessage(messageList.length)"></i>
                     </div>
                 </div>

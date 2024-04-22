@@ -45,7 +45,7 @@ export class AppComponent extends ComponentBase implements OnInit {
 
     this.subscribeChannelByName("chat-channel");
     // _pusherService.initializeUserPusher();
-    this.subcribeUserActiveChannel();
+    // this.subcribeUserActiveChannel();
   }
 
   ngOnInit(): void {
@@ -69,11 +69,11 @@ export class AppComponent extends ComponentBase implements OnInit {
     });
   }
 
-  private subcribeUserActiveChannel(){
-    this.userActiveChannel = this._pusherService.subscribeUserChatChannel('heas');
+  // private subcribeUserActiveChannel(){
+  //   this.userActiveChannel = this._pusherService.subscribeUserChatChannel('heas');
 
-    this.userActiveChannel.bind('active-user-event', (data: any) => {
-      console.log(data);
-    });
-  }
+  //   this.userActiveChannel.bind('active-user-event', (data: any) => {
+  //     console.log(data);
+  //   });
+  // }
 }

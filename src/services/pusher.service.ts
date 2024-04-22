@@ -18,7 +18,7 @@ export class PusherService {
   constructor() {
     Pusher.logToConsole = true;
     this.initializePusher();
-    this.initializeUserPusher();
+    // this.initializeUserPusher();
   }
 
   initializePusher(): void {
@@ -31,21 +31,21 @@ export class PusherService {
 
 
 
-  public initializeUserPusher() {
-    this.activeUserChannelPusher = new Pusher(environment.pusher.key, { cluster: 'ap2' });
-    this.subscribeUserChatChannel('as');
-  }
+  // public initializeUserPusher() {
+  //   this.activeUserChannelPusher = new Pusher(environment.pusher.key, { cluster: 'ap2' });
+  //   this.subscribeUserChatChannel('as');
+  // }
 
 
-  public subscribeUserChatChannel(channelName: string) {
-    return this.activeUserChannelPusher.subscribe('active-user-channel')
+  // public subscribeUserChatChannel(channelName: string) {
+  //   return this.activeUserChannelPusher.subscribe('active-user-channel')
     // this.activeUserChannel = this.activeUserChannelPusher.subscribe('active')
     // this.activeUserChannel.bind('active-user', (data: any) => {
     //   console.log(data);
     // });
-  }
+  // }
 
-  public triggerUserChatChannel(channelName: string) {
-    this.activeUserChannelPusher.trigger('active-user-channel', { message: 'hello' });
-  }
+  // public triggerUserChatChannel(channelName: string) {
+  //   this.activeUserChannelPusher.trigger('active-user-channel', { message: 'hello' });
+  // }
 }
