@@ -84,8 +84,6 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
   }
 
   public onMediaSelect(event: any) {
-    console.log("hiuyhui");
-    
     this.selectedDocument = "";
     this.ConvertToBaseobj.imageToBase64Promise(event).then(
       (res: string) => {
@@ -99,6 +97,7 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
 
   public onFileDropped(event: any) {
     this.selectedFileName = event.name;
+    
   }
 
   public onDocumentSelect(event: any) {
