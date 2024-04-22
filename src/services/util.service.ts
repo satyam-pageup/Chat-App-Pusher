@@ -1,15 +1,18 @@
-import { EventEmitter, Injectable } from '@angular/core';
+import { EventEmitter, Injectable, inject } from '@angular/core';
 import { ChatBoxI, MessageI } from '../app/model/chat.model';
 import { NumberString } from '../app/model/util.model';
 import { IGetAllUser, UserI } from '../app/response/user.response';
 import { ComponentBase } from '../app/shared/class/ComponentBase.class';
 import { IResponseG, ResponseIterableI } from '../app/response/responseG.response';
 import { APIRoutes } from '../app/shared/constants/apiRoutes.constant';
+import { PusherService } from './pusher.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UtilService extends ComponentBase {
+
+  private _pusherService = inject(PusherService);
 
   public chatClickedE: EventEmitter<number> = new EventEmitter<number>();
   public showUser: EventEmitter<boolean> = new EventEmitter<boolean>();
@@ -30,5 +33,19 @@ export class UtilService extends ComponentBase {
   public search(payload: any) {
     return this._httpClient.post<ResponseIterableI<IGetAllUser[]>>(`${this.baseUrl}${APIRoutes.getAllEmployee}`, payload);
   }
+
+
+
+
+  // private channel: any;
+
+  // public subscribeChannelByName(channelName: string) {
+  //   this._pusherService.initializePusher();
+  //   this.channel = this._pusherService.subscribeToChannel(channelName);
+
+  //   this.channel.bind('my-event', (data: MessageI) => {
+  //     this._pusherService.messageReceivedE.emit(data);
+  //   });
+  // }
 
 }

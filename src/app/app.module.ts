@@ -24,6 +24,7 @@ import { TimeAgoPipe } from './shared/pipe/time-ago.pipe';
 import { ChatlistTimeAgoPipe } from './shared/pipe/chatlist-time-ago.pipe';
 import { PusherService } from '../services/pusher.service';
 import { PusherMessageService } from '../services/pusher-message.service';
+import { DatePipe } from '@angular/common';
 
 initializeApp(environment.firebase);
 @NgModule({
@@ -54,7 +55,8 @@ initializeApp(environment.firebase);
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
-    PusherService, PusherMessageService
+    PusherService, PusherMessageService,
+    DatePipe
   ],
   bootstrap: [AppComponent]
 })

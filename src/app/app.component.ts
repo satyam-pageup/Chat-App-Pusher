@@ -22,6 +22,7 @@ export class AppComponent extends ComponentBase implements OnInit {
   public showChatMessages: boolean = false;
 
   private channel: any;
+  private userActiveChannel: any;
 
   constructor(private firebaseService: FirebaseService,
     public _utilService: UtilService,
@@ -42,7 +43,9 @@ export class AppComponent extends ComponentBase implements OnInit {
       }
     )
 
-    this.subscribeToUserChannel();
+    this.subscribeChannelByName("chat-channel");
+    // _pusherService.initializeUserPusher();
+    this.subcribeUserActiveChannel();
   }
 
   ngOnInit(): void {
@@ -57,20 +60,20 @@ export class AppComponent extends ComponentBase implements OnInit {
     this._route.navigate(['/login']);
   }
 
+  private subscribeChannelByName(channelName: string) {
+    // this._pusherService.initializePusher();
+    this.channel = this._pusherService.subscribeToChannel(channelName);
 
-  private subscribeToUserChannel() {
-    this._pusherService.subcribeToChannelE.subscribe(
-      (cName: string[]) => {
-        this._pusherService.initializePusher();
-        cName.forEach(
-          (name: string) => {
-            this.channel = this._pusherService.subscribeToChannel(name);
-            this.channel.bind('my-event', (data: MessageI) => {
-              this._pusherService.messageReceivedE.emit(data);
-            })
-          }
-        )
-      }
-    )
+    this.channel.bind('my-event', (data: MessageI) => {
+      this._pusherService.messageReceivedE.emit(data);
+    });
+  }
+
+  private subcribeUserActiveChannel(){
+    this.userActiveChannel = this._pusherService.subscribeUserChatChannel('heas');
+
+    this.userActiveChannel.bind('active-user-event', (data: any) => {
+      console.log(data);
+    });
   }
 }

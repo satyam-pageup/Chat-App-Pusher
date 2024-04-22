@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ElementRef, HostListener, OnInit, QueryList, ViewChild, ViewChildren, viewChild } from '@angular/core';
 import { IResponseG, GetMessageI } from '../../../response/responseG.response';
-import { ChatBoxI, MessageI } from '../../../model/chat.model';
+import { ChatBoxI, MessageI, MessageNewI } from '../../../model/chat.model';
 import { GetMessagePaginationI } from '../../../model/pagination.model';
 import { ComponentBase } from '../../../shared/class/ComponentBase.class';
 import { UtilService } from '../../../../services/util.service';
@@ -10,8 +10,9 @@ import { CGetAllUser } from '../../../response/user.response';
 import { ConfirmationComponent } from '../../../shared/component/confirmation/confirmation.component';
 import { FormControl } from '@angular/forms';
 import { ConvertToBase } from '../../../shared/class/ConvertoBase64.class';
-import { NumberString } from '../../../model/util.model';
 import { PusherService } from '../../../../services/pusher.service';
+import { DatePipe } from '@angular/common';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-chat-box',
@@ -38,7 +39,8 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
     take: 20,
     search: ""
   }
-  public messageList: MessageI[] = [];
+  // public messageList: MessageI[] = [];
+  public messageList: MessageNewI[] = [];
   public recevierId: number = -1;
   public message: string = '';
   private receiverStystemToken: string = '';
@@ -66,7 +68,7 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
   public userBlockState: string = '';
 
   constructor(public _utilService: UtilService, private firebaseService: FirebaseService,
-    private elementRef: ElementRef, private _pusherService: PusherService) {
+    private elementRef: ElementRef, private _pusherService: PusherService, private _datePipe: DatePipe) {
     super();
     this.isSearchedUserChat = false;
   }
@@ -105,14 +107,15 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
   }
 
 
-  public onEnterKeyDown(event: any) {
+  public onEnterKeyDown(event: any, index: number) {
     event.preventDefault();
-    this.sendMessage();
+    this.sendMessage(index);
   }
 
-  public sendMessage() {
+  public sendMessage(index: number) {
+
+    this._pusherService.triggerUserChatChannel('active');
     this.showEmojiPicker = false;
-    this.options.index = 0;
     this.isScrollToBottom = true;
     this.isSendMsg = true;
     if (this.message.trim().length > 0) {
@@ -120,12 +123,31 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
         message: this.message.trim()
       }
 
-      this.postAPICallPromise<{ message: string }, IResponseG<MessageI>>(APIRoutes.sendMessage(this.recevierId), data, this.headerOption).then(
-        (res) => {
-          this.messageList.push(res.data);
+
+      const rMsg: MessageNewI = {
+        id: -1,
+        message: data.message,
+        name: this._utilService.loggedInUserName,
+        userType: "user",
+        senderId: this._utilService.loggedInUserId,
+        isSeen: false,
+        status: "sending",
+        messageDate: (this._datePipe.transform(new Date(), 'medium', 'UTC') as string)
+      }
+      this.messageList.push(rMsg);
+
+      const hitUrl: string = `${environment.baseUrl}${APIRoutes.sendMessage(this.recevierId)}`
+      this._httpClient.post<IResponseG<MessageI>>(hitUrl, data).subscribe({
+        next: (res) => {
+          this.messageList[index].status = "success";
           this.firebaseService.sendNotification({ receiverSystemToken: this.receiverStystemToken, title: "WhatsApp", body: data.message }, this._utilService.loggedInUserId);
+        },
+        error: (err) => {
+          this.messageList[index].status = "failed";
+          console.log(err);
         }
-      )
+      })
+
       this.message = '';
     }
   }
@@ -228,6 +250,10 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
     this._utilService.chatClickedE.subscribe(
       (id: number) => {
         this.recevierId = id;
+
+
+        // this._pusherService.subscribeUserChatChannel('active');
+
         this.getChatByIdListen(id);
         if (id > -1)
           this.showChatMessages = true;
@@ -241,10 +267,22 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
     this._pusherService.messageReceivedE.subscribe((msg: MessageI) => {
       if (msg.senderId == this._utilService.currentOpenedChat) {
         this.isScrollToBottom = true;
-        this.messageList.push(msg);
+
+        const rMsg: MessageNewI = {
+          id: msg.id,
+          message: msg.message,
+          name: msg.name,
+          userType: msg.userType,
+          senderId: msg.senderId,
+          isSeen: msg.isSeen,
+          status: "",
+          messageDate: msg.messageDate,
+        }
+
+        this.messageList.push(rMsg);
       }
-      else{
-        if(msg.senderId != this._utilService.loggedInUserId){
+      else {
+        if (msg.senderId != this._utilService.loggedInUserId) {
           this._utilService.UserPresenceCheckInChatListE.emit(msg);
         }
       }
@@ -264,7 +302,24 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
       this.postAPICallPromise<GetMessagePaginationI, GetMessageI<MessageI[]>>(APIRoutes.getMessageById(res.id), this.options, this.headerOption).then(
         (res) => {
           this.showChatMessages = true;
-          this.messageList = res.data.data;
+          res.data.data.forEach(
+            (msg: MessageI) => {
+              const rMsg: MessageNewI = {
+                id: msg.id,
+                message: msg.message,
+                name: msg.name,
+                userType: msg.userType,
+                senderId: msg.senderId,
+                isSeen: msg.isSeen,
+                status: (msg.isSeen) ? 'seen' : 'success',
+                messageDate: msg.messageDate,
+              }
+
+              this.messageList.push(rMsg);
+            }
+          )
+
+          console.log(this.messageList);
           this.receiverStystemToken = res.data.systemToken;
           this.isScrollToBottom = true;
           if (res.data.isBlockedUser) {
@@ -287,7 +342,18 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
             this.isSendMsg = false;
           }
           for (let i = res.data.data.length - 1; i > -1; i--) {
-            this.messageList.unshift(res.data.data[i]);
+
+            const rMsg: MessageNewI = {
+              id: res.data.data[i].id,
+              message: res.data.data[i].message,
+              name: res.data.data[i].name,
+              userType: res.data.data[i].userType,
+              senderId: res.data.data[i].senderId,
+              isSeen: res.data.data[i].isSeen,
+              status: "",
+              messageDate: res.data.data[i].messageDate,
+            }
+            this.messageList.unshift(rMsg);
           }
           this.receiverStystemToken = res.data.systemToken;
         }
@@ -326,7 +392,24 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
     if (this._utilService.currentOpenedChat != -1) {
       this.postAPICallPromise<GetMessagePaginationI, GetMessageI<MessageI[]>>(APIRoutes.getMessageById(id), this.options, this.headerOption).then(
         (res) => {
-          this.messageList = res.data.data;
+
+          res.data.data.forEach(
+            (msg: MessageI) => {
+              const rMsg: MessageNewI = {
+                id: msg.id,
+                message: msg.message,
+                name: msg.name,
+                userType: msg.userType,
+                senderId: msg.senderId,
+                isSeen: msg.isSeen,
+                status: (msg.isSeen) ? 'seen' : 'unseen',
+                messageDate: msg.messageDate,
+              }
+
+              this.messageList.push(rMsg);
+            }
+          )
+
           this.receiverStystemToken = res.data.systemToken;
           this.isScrollToBottom = true;
           if (res.data.isBlockedUser) {

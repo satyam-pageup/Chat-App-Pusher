@@ -186,29 +186,19 @@
     textarea {
       width: 100%;
       border: none;
-      // border-radius: 0 0 7px 7px;
       border-radius: 7px;
       padding: 10px;
-      resize: none;
+      padding-right: 35px;
       scrollbar-width: none;
+      resize: none;
+      min-height: 2em;
+      max-height: 6em;
+
     }
 
     textarea:focus-visible {
       outline: none;
     }
-
-    // input {
-    //   width: 100%;
-    //   min-height: 40px;
-    //   border: none;
-    //   border-radius: 7px;
-    //   padding: 0 10px;
-
-    // }
-
-    // input:focus-visible {
-    //   outline: none;
-    // }
 
     .bx-send {
       position: absolute;
@@ -271,11 +261,11 @@ input[type="file"] {
   opacity: 1000000;
 }
 
-.selected-file{
+.selected-file {
   background: white;
-    margin: 10px 0px 0px 70px;
-    border-radius: 7px 7px 0 0;
-    padding: 10px;
+  margin: 10px 0px 0px 70px;
+  border-radius: 7px 7px 0 0;
+  padding: 10px;
 }
 
 .selected-file-div-s {
@@ -284,7 +274,7 @@ input[type="file"] {
   background-color: #f3252569;
   height: 34px;
   border-radius: 11px;
-  padding:20px;
+  padding: 20px;
   justify-content: space-between;
   align-items: center;
   // border: 1px solid #cabebe;

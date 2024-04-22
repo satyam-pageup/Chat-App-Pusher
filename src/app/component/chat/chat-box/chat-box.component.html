@@ -49,8 +49,10 @@
                                 style="color: black;"></i>
                             <span>
                                 {{ chats.messageDate| utcToIndianTime }}
-                                <i *ngIf="!chats.isSeen" style="color: rgb(51, 51, 51); font-size: 15px;" class='bx bx-check'></i>
-                                <i *ngIf="chats.isSeen" style="color: blue; font-size: 15px;" class='bx bx-check-double' ></i>
+                                <i *ngIf="chats.status == 'sending'" style="color: black;" class='bx bx-radio-circle'></i>
+                                <i *ngIf="chats.status == 'failed'" style="color: black;" class='bx bx-x-circle'></i>
+                                <i *ngIf="chats.status == 'success'"  style="color: rgb(51, 51, 51); font-size: 15px;" class='bx bx-check'></i>
+                                <i *ngIf="chats.status == 'seen' " style="color: blue; font-size: 15px;" class='bx bx-check-double' ></i> 
                             </span>
                         </p>
                     </div>
@@ -98,8 +100,8 @@
                             </ul>
                         </div>
 
-                        <textarea rows="1" [(ngModel)]="message" (keydown.enter)="onEnterKeyDown($event)"></textarea>
-                        <i class='bx bx-send' (click)="sendMessage()"></i>
+                        <textarea rows="2" [(ngModel)]="message" (keydown.enter)="onEnterKeyDown($event, messageList.length)"></textarea>
+                        <i class='bx bx-send' (click)="sendMessage(messageList.length)"></i>
                     </div>
                 </div>
                 <div *ngIf="userBlockState=='Unblock'"

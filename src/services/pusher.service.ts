@@ -7,27 +7,45 @@ import { MessageI } from '../app/model/chat.model';
   providedIn: 'root'
 })
 export class PusherService {
-  pusher: any;
-  messagesChannel: any;
+  public pusher: any;
+  public messagesChannel: any;
+  public activeUserChannel: any;
+  public activeUserChannelPusher: any;
 
   public subcribeToChannelE: EventEmitter<string[]> = new EventEmitter<string[]>();
   public messageReceivedE: EventEmitter<MessageI> = new EventEmitter<MessageI>();
 
   constructor() {
-    // Pusher.logToConsole = true;
+    Pusher.logToConsole = true;
     this.initializePusher();
+    this.initializeUserPusher();
   }
 
   initializePusher(): void {
-    this.pusher = new Pusher(environment.pusher.key, { cluster: 'ap2', });
+    this.pusher = new Pusher(environment.pusher.key, { cluster: 'ap2' });
   }
 
   public subscribeToChannel(channelName: string) {
     return this.pusher.subscribe(channelName);
   }
 
-  // public subscribeToUserChannel(channelname: string, eventName: string, callback: (data: any) => void): void {
-  //   const channel = this.pusher.subscribe(channelname);
-  //   channel.bind(eventName, callback);
-  // }
+
+
+  public initializeUserPusher() {
+    this.activeUserChannelPusher = new Pusher(environment.pusher.key, { cluster: 'ap2' });
+    this.subscribeUserChatChannel('as');
+  }
+
+
+  public subscribeUserChatChannel(channelName: string) {
+    return this.activeUserChannelPusher.subscribe('active-user-channel')
+    // this.activeUserChannel = this.activeUserChannelPusher.subscribe('active')
+    // this.activeUserChannel.bind('active-user', (data: any) => {
+    //   console.log(data);
+    // });
+  }
+
+  public triggerUserChatChannel(channelName: string) {
+    this.activeUserChannelPusher.trigger('active-user-channel', { message: 'hello' });
+  }
 }

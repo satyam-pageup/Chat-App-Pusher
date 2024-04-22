@@ -30,3 +30,15 @@ export interface MessageI{
     isSeen: boolean;
     messageDate: string;
 }
+
+
+export interface MessageNewI{
+    id: number;
+    message: string;
+    name: string;
+    userType: string;
+    senderId: number;
+    isSeen: boolean;
+    status: "sending" | "failed" | "success" | "seen" | "unseen" | "";
+    messageDate: string;
+}
