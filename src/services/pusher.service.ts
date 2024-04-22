@@ -7,7 +7,7 @@ import { MessageI } from '../app/model/chat.model';
   providedIn: 'root'
 })
 export class PusherService {
-  public pusher: any;
+  public pusher!: Pusher;
   public messagesChannel: any;
   public activeUserChannel: any;
   public activeUserChannelPusher: any;
@@ -28,22 +28,9 @@ export class PusherService {
     return this.pusher.subscribe(channelName);
   }
 
+  public sendMessage(){
+    // this.pusher.trigger("chat-channel", "my-event", 'hello');
+    // console.log(this.pusher.send_event('new-evnet', 'hello', 'chat-channel'));
 
-
-  // public initializeUserPusher() {
-    // this.activeUserChannelPusher = new Pusher(environment.pusher.key, { cluster: 'ap2' });
-    // this.subscribeUserChatChannel('as');
-  // }
-
-
-  // public subscribeUserChatChannel(channelName: string) {
-  //   return this.activeUserChannelPusher.subscribe('active-user-channel')
-  //   // this.activeUserChannel.bind('active-user', (data: any) => {
-  //   //   console.log(data);
-  //   // });
-  // }
-
-  public triggerUserChatChannel(channelName: string) {
-    // this._pusherObj.trigger(channelName, { message: 'hello' });
   }
 }

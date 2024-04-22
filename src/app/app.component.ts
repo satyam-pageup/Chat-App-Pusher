@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
 
 import { PusherService } from '../services/pusher.service';
 import { MessageI } from './model/chat.model';
+import { Channel } from 'pusher-js';
 
 @Component({
   selector: 'app-root',
@@ -21,8 +22,7 @@ export class AppComponent extends ComponentBase implements OnInit {
   public username: string = '';
   public showChatMessages: boolean = false;
 
-  private channel: any;
-  private userActiveChannel: any;
+  private channel!: Channel;
 
   constructor(private firebaseService: FirebaseService,
     public _utilService: UtilService,
@@ -64,13 +64,15 @@ export class AppComponent extends ComponentBase implements OnInit {
     this.channel.bind('my-event', (data: MessageI) => {
       this._pusherService.messageReceivedE.emit(data);
     });
+
+    // this.channel.bind('client-active-event', (data: MessageI) => {
+    //   this._pusherService.messageReceivedE.emit(data);
+    // });
+
+    this.channel.bind('pusher:subscription_succeeded', (data: any) => {
+      // members.map(member => member.id)
+      console.log(data);
+    });
   }
 
-  // private subcribeUserActiveChannel() {
-  //   this.userActiveChannel = this._pusherService.subscribeUserChatChannel('heas');
-
-  //   this.userActiveChannel.bind('active-user-event', (data: any) => {
-  //     console.log(data);
-  //   });
-  // }
 }
