@@ -23,6 +23,7 @@ export class AppComponent extends ComponentBase implements OnInit {
   public showChatMessages: boolean = false;
 
   private channel!: Channel;
+  private userActiveChannel!: Channel;
 
   constructor(private firebaseService: FirebaseService,
     public _utilService: UtilService,
