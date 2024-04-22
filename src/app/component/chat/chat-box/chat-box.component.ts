@@ -176,18 +176,25 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
     this.ConfirmationComponentObj.openModal("Delete", "Do you want to delete it ?").then(
       (res: boolean) => {
         if (res) {
-          const msgtoDlt: { ids: number[], recieverId: number } = {
-            ids: [id],
-            recieverId: this.recevierId
-          }
-
-          this.deleteAPICallPromise<{ ids: number[] }, IResponseG<null>>(APIRoutes.deleteMessage, msgtoDlt, this.headerOption).then(
-            (res) => {
-              this.messageList.splice(index, 1);
-              this.isScrollToBottom = true;
-              this._toastreService.success("Message deleted successfully");
+          if (id != -1) {
+            const msgtoDlt: { ids: number[], recieverId: number } = {
+              ids: [id],
+              recieverId: this.recevierId
             }
-          )
+
+            this.deleteAPICallPromise<{ ids: number[] }, IResponseG<null>>(APIRoutes.deleteMessage, msgtoDlt, this.headerOption).then(
+              (res) => {
+                this.messageList.splice(index, 1);
+                this.isScrollToBottom = true;
+                this._toastreService.success("Message deleted successfully");
+              }
+            )
+          }
+          else {
+            this.messageList.splice(index, 1);
+            this.isScrollToBottom = true;
+            this._toastreService.success("Message deleted successfully");
+          }
         }
       }
     )
@@ -331,7 +338,6 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
             }
           )
 
-          console.log(this.messageList);
           this.receiverStystemToken = res.data.systemToken;
           this.isScrollToBottom = true;
           if (res.data.isBlockedUser) {

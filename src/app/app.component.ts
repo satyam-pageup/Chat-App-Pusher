@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
 
 import { PusherService } from '../services/pusher.service';
 import { MessageI } from './model/chat.model';
+import { Channel } from 'pusher-js';
 import { TokenDecodeService } from '../services/token-decode.service';
 
 @Component({
@@ -22,8 +23,8 @@ export class AppComponent extends ComponentBase implements OnInit {
   public username: string = '';
   public showChatMessages: boolean = false;
 
-  private channel: any;
-  private userActiveChannel: any;
+  private channel!: Channel;
+  private userActiveChannel!: Channel;
 
   constructor(private firebaseService: FirebaseService,
     public _utilService: UtilService,

@@ -50,7 +50,7 @@
                             <span>
                                 {{ chats.messageDate| utcToIndianTime }}
                                 <i *ngIf="chats.status == 'sending'" style="color: black;" class='bx bx-radio-circle'></i>
-                                <i *ngIf="chats.status == 'failed'" style="color: black;" class='bx bx-x-circle'></i>
+                                <i *ngIf="chats.status == 'failed'" style="color: red;" class='bx bx-x-circle'></i>
                                 <i *ngIf="chats.status == 'success'"  style="color: rgb(51, 51, 51); font-size: 15px;" class='bx bx-check'></i>
                                 <i *ngIf="chats.status == 'seen' " style="color: blue; font-size: 15px;" class='bx bx-check-double' ></i> 
                             </span>
