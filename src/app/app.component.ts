@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 import { PusherService } from '../services/pusher.service';
 import { MessageI } from './model/chat.model';
 import { Channel } from 'pusher-js';
+import { TokenDecodeService } from '../services/token-decode.service';
 
 @Component({
   selector: 'app-root',
@@ -28,7 +29,8 @@ export class AppComponent extends ComponentBase implements OnInit {
   constructor(private firebaseService: FirebaseService,
     public _utilService: UtilService,
     private _route: Router,
-    private _pusherService: PusherService
+    private _pusherService: PusherService,
+    private _tokenDecodeService:TokenDecodeService
   ) {
     super();
     this.firebaseService.requestPermission();
@@ -49,8 +51,17 @@ export class AppComponent extends ComponentBase implements OnInit {
 
   ngOnInit(): void {
     if (localStorage.getItem("jwtToken")) {
-      this.showChatMessages = true;
-      this._route.navigate(['/chat']);
+
+      let isTokenExist = this._tokenDecodeService.getDecodedAccessToken(localStorage.getItem("jwtToken")!);
+
+      if(!isTokenExist){
+        this.showChatMessages = true;
+        this._route.navigate(['/chat']);
+      }
+      else{
+        this._route.navigate(['/login']);
+      }
+
     }
   }
 
