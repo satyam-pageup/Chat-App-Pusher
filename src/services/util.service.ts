@@ -1,6 +1,6 @@
 import { EventEmitter, Injectable, inject } from '@angular/core';
 import { ChatBoxI, MessageI } from '../app/model/chat.model';
-import { NumberString } from '../app/model/util.model';
+import { IUpdateChatList, NumberString } from '../app/model/util.model';
 import { IGetAllUser, UserI } from '../app/response/user.response';
 import { ComponentBase } from '../app/shared/class/ComponentBase.class';
 import { IResponseG, ResponseIterableI } from '../app/response/responseG.response';
@@ -18,6 +18,7 @@ export class UtilService extends ComponentBase {
   public showUser: EventEmitter<boolean> = new EventEmitter<boolean>();
   public userChatEmitter: EventEmitter<{ id: number, name: string }> = new EventEmitter<{ id: number, name: string }>();
   public UserPresenceCheckInChatListE: EventEmitter<MessageI> = new EventEmitter<MessageI>();
+  public updateChatListE: EventEmitter<IUpdateChatList> = new EventEmitter<IUpdateChatList>();
 
   public isUserChatAlreadyExists: boolean = false;
   public loggedInUserId: number = -1;
