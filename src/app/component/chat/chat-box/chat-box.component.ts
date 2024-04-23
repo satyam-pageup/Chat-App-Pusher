@@ -116,6 +116,10 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
 
   }
 
+  public onLongPress(event: any){
+    console.log(event);
+  }
+
   public onDocumentSelect(event: any) {
     this.selectedMedia = "";
     this.ConvertToBaseobj.pdfToBase64Promise(event).then(
@@ -337,6 +341,7 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
       this.postAPICallPromise<GetMessagePaginationI, GetMessageI<MessageI[]>>(APIRoutes.getMessageById(res.id), this.options, this.headerOption).then(
         (res) => {
           this.showChatMessages = true;
+          this.messageList = [];
           res.data.data.forEach(
             (msg: MessageI) => {
               const rMsg: MessageNewI = {

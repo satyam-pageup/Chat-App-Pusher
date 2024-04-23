@@ -34,7 +34,7 @@
                         </div>
                     </ng-container>
 
-                    <div class="message-box friend-message" *ngIf="recevierId == chats.senderId">
+                    <div appLongPress class="message-box friend-message" *ngIf="recevierId == chats.senderId">
                         <p style="word-wrap: break-word;">{{chats.message}}
                             <br>
                             <span>
@@ -43,7 +43,7 @@
                         </p>
                     </div>
                     <div class="message-box my-message" *ngIf="_utilService.loggedInUserId == chats.senderId">
-                        <p style="word-wrap: break-word;">
+                        <p appLongPress (longPress)="onLongPress($event)" style="word-wrap: break-word;">
                             {{chats.message}}
                             <i (click)="deleteMessage(chats.id, i)" class='bx bxs-trash c-p-s'
                                 style="color: black;"></i>

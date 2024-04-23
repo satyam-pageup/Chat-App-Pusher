@@ -25,6 +25,7 @@ import { ChatlistTimeAgoPipe } from './shared/pipe/chatlist-time-ago.pipe';
 import { PusherService } from '../services/pusher.service';
 import { PusherMessageService } from '../services/pusher-message.service';
 import { DatePipe } from '@angular/common';
+import { LongPressDirective } from './shared/directives/long-press.directive';
 
 initializeApp(environment.firebase);
 @NgModule({
@@ -40,6 +41,7 @@ initializeApp(environment.firebase);
     DndDirective,
     TimeAgoPipe,
     ChatlistTimeAgoPipe,
+    LongPressDirective,
   ],
   imports: [
     BrowserModule,
