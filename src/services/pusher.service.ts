@@ -16,7 +16,7 @@ export class PusherService {
   public messageReceivedE: EventEmitter<MessageI> = new EventEmitter<MessageI>();
 
   constructor() {
-    Pusher.logToConsole = true;
+    // Pusher.logToConsole = true;
     // this.initializePusher();
   }
   
