@@ -11,6 +11,7 @@
 
 .chat-list {
     box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    height: 100%;
     padding: 10px;
 }
 
@@ -32,6 +33,9 @@
 
 .list-group {
     cursor: pointer;
+    height: 87%;
+    overflow: auto;
+    scrollbar-width: thin;
 }
 
 .show-option .bx-chevron-down {

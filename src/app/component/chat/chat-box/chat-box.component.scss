@@ -31,12 +31,14 @@
 .header {
   align-items: center;
   background: #f0f2f5;
-  height: 60px;
+  // height: 60px;
+  height: 10%;
 }
 
 .body {
   background-image: url(../../../../assets/backgrnd.png);
-  min-height: 555px;
+  // min-height: 555px;
+  height: 80%;
   background-color: #efeae2;
 
 
@@ -44,7 +46,8 @@
     position: relative;
     width: 100%;
     // height: calc(80vh - 105px);
-    height: 565px;
+    // height: 565px;
+    height: 100%;
     /*60+60*/
     padding: 50px;
     overflow-y: scroll;
@@ -167,7 +170,7 @@
   bottom: 0;
   width: 100%;
   // height: 60px;
-  min-height: 60px;
+  min-height: 10%;
   max-height: max-content;
   // height: 120px;
   background-color: #f0f2f5;

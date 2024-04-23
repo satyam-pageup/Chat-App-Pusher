@@ -59,58 +59,58 @@
                 </ng-container>
             </div>
 
-            <div class="row mx-0 footer">
-                <div *ngIf="userBlockState=='Block'" class="row-mx-0" style="width: 100%; margin: auto;">
-                    @if (selectedFileName != "") {
-                    <div class="selected-file">
-                        <div class="selected-file-div-s">
-                            <img [src]="selectedMedia" alt="">
-                            {{selectedFileName}}
-                            <i class='bx bx-x c-p' style="color: red;"
-                                (click)='selectedFileName="" || selectedDocument="" || selectedMedia=""'></i>
-                        </div>
-                    </div>
-                    }
-                    <div class="message-box">
-                        <i class='bx bx-smile' (click)="toggleEmojiPicker()"></i>
-                        <div class="emoji-container">
-                            <emoji-mart class="emoji-mart" *ngIf="showEmojiPicker" (emojiSelect)="addEmoji($event)"
-                                title="Pick your emoji…"></emoji-mart>
-                        </div>
-                        <div class="btn-group dropup">
-                            <i data-bs-toggle="dropdown" aria-expanded="false" class='bx bx-plus'></i>
-                            <ul class="dropdown-menu ">
-                                <li>
-                                    <label for="file-upload" class="custom-file-upload">
-                                        <i class='bx bxs-file-doc'></i>
-                                        Document
-                                        <input id="file-upload" type="file" (change)="onDocumentSelect($event)"
-                                            [formControl]="documentFormControl"
-                                            accept=".xlsx,.xls,.doc, .docx,.ppt, .pptx,.pdf" />
-                                    </label>
-
-                                </li>
-                                <li>
-                                    <label for="img-upload" class="custom-file-upload">
-                                        <i class='bx bx-images'></i>
-                                        Photos & Videos
-                                        <input id="img-upload" type="file" [formControl]="mediaFormControl"
-                                            (change)="onMediaSelect($event)" [value]="" accept="image/*,video/*"/>
-                                    </label>
-                                </li>
-                            </ul>
-                        </div>
-
-                        <textarea rows="1" [(ngModel)]="message" (keyup)="autoGrowTextZone($event)" (keydown.enter)="onEnterKeyDown($event, messageList.length)"></textarea>
-                        <i class='bx bx-send' (click)="sendMessage(messageList.length)"></i>
+        </div>
+        <div class="row mx-0 footer">
+            <div *ngIf="userBlockState=='Block'" class="row-mx-0" style="width: 100%; margin: auto;">
+                @if (selectedFileName != "") {
+                <div class="selected-file">
+                    <div class="selected-file-div-s">
+                        <img [src]="selectedMedia" alt="">
+                        {{selectedFileName}}
+                        <i class='bx bx-x c-p' style="color: red;"
+                            (click)='selectedFileName="" || selectedDocument="" || selectedMedia=""'></i>
                     </div>
                 </div>
-                <div *ngIf="userBlockState=='Unblock'"
-                    class="row-mx-0 d-flex justify-content-center align-items-center">
-                    <p>Can't send a message to blocked contact</p>
-                </div>
+                }
+                <div class="message-box">
+                    <i class='bx bx-smile' (click)="toggleEmojiPicker()"></i>
+                    <div class="emoji-container">
+                        <emoji-mart class="emoji-mart" *ngIf="showEmojiPicker" (emojiSelect)="addEmoji($event)"
+                            title="Pick your emoji…"></emoji-mart>
+                    </div>
+                    <div class="btn-group dropup">
+                        <i data-bs-toggle="dropdown" aria-expanded="false" class='bx bx-plus'></i>
+                        <ul class="dropdown-menu ">
+                            <li>
+                                <label for="file-upload" class="custom-file-upload">
+                                    <i class='bx bxs-file-doc'></i>
+                                    Document
+                                    <input id="file-upload" type="file" (change)="onDocumentSelect($event)"
+                                        [formControl]="documentFormControl"
+                                        accept=".xlsx,.xls,.doc, .docx,.ppt, .pptx,.pdf" />
+                                </label>
 
+                            </li>
+                            <li>
+                                <label for="img-upload" class="custom-file-upload">
+                                    <i class='bx bx-images'></i>
+                                    Photos & Videos
+                                    <input id="img-upload" type="file" [formControl]="mediaFormControl"
+                                        (change)="onMediaSelect($event)" [value]="" accept="image/*,video/*"/>
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <textarea rows="1" [(ngModel)]="message" (keyup)="autoGrowTextZone($event)" (keydown.enter)="onEnterKeyDown($event, messageList.length)"></textarea>
+                    <i class='bx bx-send' (click)="sendMessage(messageList.length)"></i>
+                </div>
             </div>
+            <div *ngIf="userBlockState=='Unblock'"
+                class="row-mx-0 d-flex justify-content-center align-items-center">
+                <p>Can't send a message to blocked contact</p>
+            </div>
+
         </div>
     </ng-container>
 

@@ -13,13 +13,14 @@
 .chat-list{
     padding: 20px;
     height: 100%;
-    overflow-y: auto;
+    // overflow-y: auto;
     // scrollbar-color: red orange;
-  scrollbar-width: thin;
+//   scrollbar-width: thin;
 }
 
 .message-box{
     padding: 0;
+    height: 100%;
     
 }
 .row{
