@@ -132,7 +132,6 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
     )
   }
 
-
   public onEnterKeyDown(event: any, index: number) {
     event.preventDefault();
     this.sendMessage(index);
@@ -184,7 +183,6 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
           console.log(err);
         }
       })
-
       this.message = '';
     }
   }
@@ -283,7 +281,6 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
     this.message = text;
   }
 
-
   @HostListener('document:click', ['$event'])
   public handleClick(event: MouseEvent) {
     const clickedElement = event.target as HTMLElement;
@@ -293,7 +290,6 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
       this.showEmojiPicker = false;
     }
   }
-
 
   private subcritpionF() {
     this._utilService.chatClickedE.subscribe(
@@ -336,9 +332,6 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
       }
     })
   }
-
-
-
 
   private userChatEmitterSubcribedF() {
     this._utilService.userChatEmitter.subscribe((res) => {
@@ -390,7 +383,6 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
             this.isSendMsg = false;
           }
           for (let i = res.data.data.length - 1; i > -1; i--) {
-
             const rMsg: MessageNewI = {
               id: res.data.data[i].id,
               message: res.data.data[i].message,

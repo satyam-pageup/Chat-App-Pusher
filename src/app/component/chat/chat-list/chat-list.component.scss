@@ -34,9 +34,10 @@
 .list-group {
     cursor: pointer;
     height: 87%;
-    overflow: auto;
+    overflow-y: scroll;
     scrollbar-width: thin;
 }
+
 
 .show-option .bx-chevron-down {
     display: none;
