@@ -29,6 +29,7 @@ export interface MessageI{
     senderId: number;
     isSeen: boolean;
     messageDate: string;
+    receiverId: number;
 }
 
 

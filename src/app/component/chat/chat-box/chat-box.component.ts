@@ -314,10 +314,8 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
     this.userChatEmitterSubcribedF();
 
     this._pusherService.messageReceivedE.subscribe((msg: MessageI) => {
-
       if (msg.senderId == this._utilService.currentOpenedChat) {
         this.isScrollToBottom = true;
-
         const rMsg: MessageNewI = {
           id: msg.id,
           message: msg.message,
@@ -332,8 +330,7 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
         this.messageList.push(rMsg);
       }
       else {
-        if (msg.senderId != this._utilService.loggedInUserId) {
-          console.log(true);
+        if (msg.receiverId == this._utilService.loggedInUserId) {
           this._utilService.UserPresenceCheckInChatListE.emit(msg);
         }
       }

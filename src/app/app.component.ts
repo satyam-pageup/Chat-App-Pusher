@@ -73,7 +73,6 @@ export class AppComponent extends ComponentBase implements OnInit {
   private subscribeChannelByName(channelName: string) {
     this.channel = this._pusherService.subscribeToChannel(channelName);
     this.channel.bind('my-event', (data: MessageI) => {
-      console.log(data);
       this._pusherService.messageReceivedE.emit(data);
     });
   }
