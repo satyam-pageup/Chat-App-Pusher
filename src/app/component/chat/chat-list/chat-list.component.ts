@@ -4,7 +4,7 @@ import { IResponseG, ResponseIterableI } from '../../../response/responseG.respo
 import { ComponentBase } from '../../../shared/class/ComponentBase.class';
 import { UtilService } from '../../../../services/util.service';
 import { APIRoutes } from '../../../shared/constants/apiRoutes.constant';
-import { NumberString } from '../../../model/util.model';
+import { IUpdateChatList, NumberString } from '../../../model/util.model';
 import { IGetAllUser } from '../../../response/user.response';
 import { IEmplyeeOptions } from '../../../model/option.model';
 import { Subject, debounceTime, takeUntil } from 'rxjs';
@@ -39,21 +39,38 @@ export class ChatListComponent extends ComponentBase implements OnInit, OnDestro
   constructor(public _utilService: UtilService, private _pusherService: PusherService) {
     super();
 
-    _utilService.UserPresenceCheckInChatListE.subscribe((msg: MessageI) =>{
+    _utilService.updateChatListE.subscribe(
+      (res: IUpdateChatList) => {
+        console.log(res);
+        for (let i = 0; i < this.userChatList.length; i++) {
+          if (this.userChatList[i].recieverId == res.receiverId) {
+            this.userChatList[i].lastMessage = res.message;
+            this.userChatList[i].lastMessageDate = res.dateTime;
+
+            const chat: ChatBoxI = this.userChatList[i];
+            this.bringChatToTop(chat, i);
+            break;
+          }
+        }
+      }
+    )
+
+    _utilService.UserPresenceCheckInChatListE.subscribe((msg: MessageI) => {
       let isUserChatAlreadyExists: boolean = false;
 
-      for(let i=0; i<this.userChatList.length; i++){
-        if(this.userChatList[i].recieverId == msg.senderId){
+
+      for (let i = 0; i < this.userChatList.length; i++) {
+        if (this.userChatList[i].recieverId == msg.senderId) {
           isUserChatAlreadyExists = true;
           this.userChatList[i].lastMessage = msg.message;
           this.userChatList[i].lastMessageDate = msg.messageDate;
-          this.userChatList[i].newMessages ++;
+          this.userChatList[i].newMessages++;
           this.bringChatToTop(this.userChatList[i], i);
           break;
         }
       }
 
-      if(!isUserChatAlreadyExists){
+      if (!isUserChatAlreadyExists) {
         this.getChatList();
       }
     })
@@ -66,7 +83,7 @@ export class ChatListComponent extends ComponentBase implements OnInit, OnDestro
         this._utilService.loggedInUserName = res.data.name;
 
         // for creating channel
-        this.getAllUser();
+        // this.getAllUser();
 
         this.getChatList();
       }
@@ -77,7 +94,7 @@ export class ChatListComponent extends ComponentBase implements OnInit, OnDestro
     ).subscribe(
       (userName) => {
         this.onDestroy$.next();
-        if(userName == ""){
+        if (userName == "") {
           this.searchResult = [];
           return;
         }
@@ -91,31 +108,6 @@ export class ChatListComponent extends ComponentBase implements OnInit, OnDestro
         )
       }
     )
-
-    // this._pusherService.messageReceivedE.subscribe((msg: MessageI) => {
-    //   let isChatAlreadyExists;
-    //   isChatAlreadyExists = false
-
-    //   for (let i = 0; i < this.userChatList.length; i++) {
-    //     if (this.userChatList[i].recieverId == msg.senderId) {
-    //       isChatAlreadyExists = true;
-    //       this.userChatList[i].lastMessage = msg.message;
-    //       this.userChatList[i].lastMessageDate = msg.messageDate
-
-    //       if (this.userChatList[i].recieverId != this._utilService.currentOpenedChat) {
-    //         this.userChatList[i].newMessages++;
-    //       }
-
-    //       this.bringChatToTop(this.userChatList[i], i);
-    //       break;
-    //     }
-    //   };
-
-    //   if (!isChatAlreadyExists) {
-    //     console.log("isChatAlreadyExists");
-    //     this.getChatBox();
-    //   }
-    // })
   }
 
 

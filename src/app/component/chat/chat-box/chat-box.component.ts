@@ -13,6 +13,7 @@ import { ConvertToBase } from '../../../shared/class/ConvertoBase64.class';
 import { PusherService } from '../../../../services/pusher.service';
 import { DatePipe } from '@angular/common';
 import { environment } from '../../../../environments/environment';
+import { IUpdateChatList } from '../../../model/util.model';
 
 @Component({
   selector: 'app-chat-box',
@@ -163,6 +164,15 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
       const hitUrl: string = `${environment.baseUrl}${APIRoutes.sendMessage(this.recevierId)}`
       this._httpClient.post<IResponseG<MessageI>>(hitUrl, data).subscribe({
         next: (res) => {
+          const updateChatListData: IUpdateChatList = {
+            receiverId: this._utilService.currentOpenedChat,
+            message: res.data.message,
+            dateTime: res.data.messageDate
+          }
+
+
+          // this._utilService.updateChatListE.emit(updateChatListData);
+          this._utilService.UserPresenceCheckInChatListE.emit(res.data);
           this.messageList[index].status = "success";
           this.messageList[index].id = res.data.id;
           this.messageList[index].messageDate = res.data.messageDate;
@@ -300,6 +310,7 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
     this.userChatEmitterSubcribedF();
 
     this._pusherService.messageReceivedE.subscribe((msg: MessageI) => {
+
       if (msg.senderId == this._utilService.currentOpenedChat) {
         this.isScrollToBottom = true;
 
@@ -318,6 +329,7 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
       }
       else {
         if (msg.senderId != this._utilService.loggedInUserId) {
+          console.log(true);
           this._utilService.UserPresenceCheckInChatListE.emit(msg);
         }
       }
