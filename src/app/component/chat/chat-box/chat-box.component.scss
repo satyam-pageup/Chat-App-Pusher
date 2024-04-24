@@ -273,17 +273,18 @@ input[type="file"] {
   display: flex;
   width: 55%;
   background-color:rgb(201 201 201 / 41%);
-  height: 34px;
+  // height: 34px;
   border-radius: 11px;
   padding: 20px;
   justify-content: space-between;
   align-items: center;
   // border: 1px solid #cabebe;
-  min-height: 111px;
+  min-height: 50px;
+  overflow-y: scroll;
 
   img{
-    width: 100px;
-    height: 100px;
+    width: 50px;
+    height: 50px;
   }
 }
 

@@ -14,6 +14,7 @@ import { PusherService } from '../../../../services/pusher.service';
 import { DatePipe } from '@angular/common';
 import { environment } from '../../../../environments/environment';
 import { IMedia, IUpdateChatList } from '../../../model/util.model';
+import { Channel } from 'pusher-js';
 
 @Component({
   selector: 'app-chat-box',
@@ -55,6 +56,8 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
     lastActive: '',
   };
 
+
+
   // for media and document uplaod
   public documentFormControl: FormControl = new FormControl(null);
   public mediaFormControl: FormControl = new FormControl(null);
@@ -71,27 +74,60 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
   public showEmojiPicker: boolean = false;
   public userBlockState: string = '';
 
+  public isTyping: boolean = false;
+  private channel!: Channel;
+
   constructor(public _utilService: UtilService, private firebaseService: FirebaseService,
     private elementRef: ElementRef, private _pusherService: PusherService, private _datePipe: DatePipe) {
     super();
     this.isSearchedUserChat = false;
+
+    this.subscribeChannelByName("typing-channel");
   }
 
   ngOnInit(): void {
     this.subcritpionF();
   }
 
-  ngAfterViewInit() {
+  private subscribeChannelByName(channelName: string) {
+    this.channel = this._pusherService.subscribeToChannel(channelName);
+    this.channel.bind('typing-event', (data: any) => {
+      console.log(data);
+      if (data.receiverId == this._utilService.loggedInUserId && data.typingUserId == this.recevierId) {
+        this.isTyping = true;
+      }
+      setTimeout(() => {
+        this.isTyping=false;
+      }, 2000);
+    });
+  }
+
+  public sendTypingStatus(isTyping: boolean) {
+    if (isTyping == true)
+      this._pusherService.sendTypingStatus(this.recevierId);
+  }
+
+  public onTyping() {
+    setTimeout(() => {
+      this.sendTypingStatus(true);
+    }, 1000);
+  }
+
+  public onStopTyping() {
+    this.sendTypingStatus(false);
+  }
+
+
+  public ngAfterViewInit() {
     this.scrollContainer = this.scrollFrame.nativeElement;
     this.itemElements.changes.subscribe(_ => this.onItemElementsChanged());
   }
 
   public onMediaSelect(event: any) {
     event.stopPropagation();
+    this.mediaBase64Array = [];
     const file: File[] = event.target.files;
-
     if (file.length > 0) {
-
       for (let i = 0; i < file.length; i++) {
         const fName: string = file[i].name;
         this.ConvertToBaseobj.imageObjectToBase64Promise(file[i]).then(
@@ -105,12 +141,13 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
           }
         )
       }
-      // )
-
       console.log(this.mediaBase64Array);
     }
-
     this.selectedDocument = "";
+  }
+
+  public removeMediaFromArray(index: number) {
+    this.mediaBase64Array.splice(index, 1);
   }
 
   public onFileDropped(event: any) {

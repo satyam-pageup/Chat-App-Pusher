@@ -7,6 +7,7 @@ export const APIRoutes = {
     getChatList: '/CommunityMessage/GetChatBox',
     deleteMessage: '/CommunityMessage/DeleteMessage',
     getAllEmployee: '/UserEmployees',
+    isTyping:(receiverId: number) => `/ChatTriggered/TriggeredByTyping/${receiverId}`,
     blockUser:(receiverId: number) => `/BlockUser/BlockUser/${receiverId}`,
     unBlockUser:(receiverId: number) => `/BlockUser/RemoveBlocked/${receiverId}`,
     sendMessage: (receiverId: number) => `/CommunityMessage/SendMessage/${receiverId}`,

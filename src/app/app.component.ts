@@ -22,10 +22,7 @@ export class AppComponent extends ComponentBase implements OnInit {
   public userDetail!: UserI;
   public username: string = '';
   public showChatMessages: boolean = false;
-
   private channel!: Channel;
-  private userActiveChannel!: Channel;
-
   constructor(private firebaseService: FirebaseService,
     public _utilService: UtilService,
     private _route: Router,
@@ -35,7 +32,6 @@ export class AppComponent extends ComponentBase implements OnInit {
     super();
     this.firebaseService.requestPermission();
     this.firebaseService.listen();
-
     this._utilService.showUser.subscribe(
       (val: boolean) => {
         if (val) {
