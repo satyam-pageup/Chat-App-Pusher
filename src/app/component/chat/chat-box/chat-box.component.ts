@@ -90,15 +90,15 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
     event.stopPropagation();
     const file: File[] = event.target.files;
 
-    console.log(file[1]);
     if (file.length > 0) {
 
       for (let i = 0; i < file.length; i++) {
+        const fName: string = file[i].name;
         this.ConvertToBaseobj.imageObjectToBase64Promise(file[i]).then(
           (res: string) => {
             const mediaBase64Data: IMedia = {
               base64: res,
-              name: "test.png"
+              name: fName
             }
             this.mediaBase64Array.push(mediaBase64Data);
             event.target.value = null;
