@@ -5,6 +5,7 @@
                 <div>
                     <!-- <ng-container> -->
                         <h5>{{Name}}</h5>
+                        <p *ngIf="isTyping">typing...</p>
                     <!-- </ng-container> -->
                 </div>
             </div>
@@ -62,13 +63,13 @@
         </div>
         <div class="row mx-0 footer">
             <div *ngIf="userBlockState=='Block'" class="row-mx-0" style="width: 100%; margin: auto;">
-                @if (selectedFileName != "") {
+                @if (mediaBase64Array.length > 0) {
                 <div class="selected-file">
-                    <div class="selected-file-div-s">
-                        <img [src]="selectedMedia" alt="">
-                        {{selectedFileName}}
+                    <div class="selected-file-div-s" *ngFor="let item of mediaBase64Array; index as i">
+                        <img [src]="item.base64" alt="">
+                        {{item.name}}
                         <i class='bx bx-x c-p' style="color: red;"
-                            (click)='selectedFileName="" || selectedDocument="" || selectedMedia=""'></i>
+                            (click)='removeMediaFromArray(i)'></i>
                     </div>
                 </div>
                 }
@@ -102,7 +103,7 @@
                         </ul>
                     </div>
 
-                    <textarea rows="1" [(ngModel)]="message" (keyup)="autoGrowTextZone($event)" (keydown.enter)="onEnterKeyDown($event, messageList.length)"></textarea>
+                    <textarea rows="1" [(ngModel)]="message" (keyup)="autoGrowTextZone($event)" (input)="onTyping()" (blur)="onStopTyping()" (keydown.enter)="onEnterKeyDown($event, messageList.length)"></textarea>
                     <i class='bx bx-send' (click)="sendMessage(messageList.length)"></i>
                 </div>
             </div>
