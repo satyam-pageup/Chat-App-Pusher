@@ -12,6 +12,5 @@ export const APIRoutes = {
     sendMessage: (receiverId: number) => `/CommunityMessage/SendMessage/${receiverId}`,
     getMessageById: (id: number) => `/CommunityMessage/DisplayMessage/${id}`,
     deleteConversationById: (id: number) => `/CommunityMessage/DeleteConversation/${id}`,
-
-
+    updateUserStatus: (receiverId: number) => `/ChatTriggered/TriggeredBySeen/${receiverId}`
 }

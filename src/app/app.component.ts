@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FirebaseService } from '../services/firebase.service';
 import { ComponentBase } from './shared/class/ComponentBase.class';
-import { IResponseG } from './response/responseG.response';
 import { UserI } from './response/user.response';
 import { UtilService } from '../services/util.service';
 import { Router } from '@angular/router';
@@ -10,6 +9,7 @@ import { PusherService } from '../services/pusher.service';
 import { MessageI } from './model/chat.model';
 import { Channel } from 'pusher-js';
 import { TokenDecodeService } from '../services/token-decode.service';
+import { IUserStatus } from './model/util.model';
 
 @Component({
   selector: 'app-root',
@@ -24,7 +24,7 @@ export class AppComponent extends ComponentBase implements OnInit {
   public showChatMessages: boolean = false;
 
   private channel!: Channel;
-  private userActiveChannel!: Channel;
+  private activeUserChannel!: Channel;
 
   constructor(private firebaseService: FirebaseService,
     public _utilService: UtilService,
@@ -45,7 +45,8 @@ export class AppComponent extends ComponentBase implements OnInit {
           this.showChatMessages = false;
       }
     )
-    this.subscribeChannelByName("chat-channel");
+    this.subscribeChatChannel("chat-channel");
+    this.subscribeActiveUserChannel();
   }
 
   ngOnInit(): void {
@@ -70,10 +71,32 @@ export class AppComponent extends ComponentBase implements OnInit {
     this._route.navigate(['/login']);
   }
 
-  private subscribeChannelByName(channelName: string) {
+  private subscribeChatChannel(channelName: string) {
     this.channel = this._pusherService.subscribeToChannel(channelName);
     this.channel.bind('my-event', (data: MessageI) => {
       this._pusherService.messageReceivedE.emit(data);
+    });
+  }
+  private subscribeActiveUserChannel() {
+    this.activeUserChannel = this._pusherService.subscribeToChannel('active-user-channel');
+    this.activeUserChannel.bind('active-user-event', (data: IUserStatus) => {
+
+      if(!data.triggeredId.startsWith((this._utilService.loggedInUserId).toString())){
+        const id: string = data.triggeredId.split('-')[0];
+        let i=0;
+        while(i<this._utilService.activeUserArray.length){
+          if(this._utilService.activeUserArray[i].startsWith(id)){
+            this._utilService.activeUserArray.splice(i, 1);
+          }
+          else{
+            i++;
+          }
+        }
+
+        this._utilService.activeUserArray.push(data.triggeredId);
+      }
+
+      console.log(this._utilService.activeUserArray);
     });
   }
 }

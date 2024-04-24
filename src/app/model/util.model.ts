@@ -12,3 +12,8 @@ export interface IMedia{
     base64: string;
     name: string;
 }
+
+export interface IUserStatus{
+    status: boolean;
+    triggeredId: string;
+}

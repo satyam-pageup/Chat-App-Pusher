@@ -118,6 +118,10 @@ export class ChatListComponent extends ComponentBase implements OnInit, OnDestro
 
 
   public getChats(id: number, name: string, chat: ChatBoxI) {
+
+    this._utilService.receiverId = id;
+    this.updateUserStatus();
+
     chat.newMessages = 0;
     const userChat: { id: number, name: string } = {
       id,
@@ -265,6 +269,14 @@ export class ChatListComponent extends ComponentBase implements OnInit, OnDestro
   @HostListener('document:click', ['$event'])
   public handleClick(event: MouseEvent) {
     this.searchResult = [];
+  }
+
+  private updateUserStatus(){
+    this.postAPICallPromise<null, IResponseG<null>>(APIRoutes.updateUserStatus(this._utilService.receiverId), null, this.headerOption).then(
+      (res) =>{
+        this._toastreService.success(res.message);
+      }
+    )
   }
 
   ngOnDestroy(): void {

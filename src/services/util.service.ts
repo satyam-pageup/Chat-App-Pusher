@@ -25,6 +25,7 @@ export class UtilService extends ComponentBase {
   public loggedInUserName: string = "";
   public receiverId: number = -1;
   public currentOpenedChat: number = -1;
+  public activeUserArray: string[] = [];
 
 
   public getLoggedInUserDetialsF() {
@@ -34,19 +35,5 @@ export class UtilService extends ComponentBase {
   public search(payload: any) {
     return this._httpClient.post<ResponseIterableI<IGetAllUser[]>>(`${this.baseUrl}${APIRoutes.getAllEmployee}`, payload);
   }
-
-
-
-
-  // private channel: any;
-
-  // public subscribeChannelByName(channelName: string) {
-  //   this._pusherService.initializePusher();
-  //   this.channel = this._pusherService.subscribeToChannel(channelName);
-
-  //   this.channel.bind('my-event', (data: MessageI) => {
-  //     this._pusherService.messageReceivedE.emit(data);
-  //   });
-  // }
 
 }
