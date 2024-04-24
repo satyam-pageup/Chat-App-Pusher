@@ -116,7 +116,6 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
   public onFileDropped(event: any) {
     this.selectedFileName = event.name;
     const fileType: string = event.type;
-
     if (fileType.startsWith('image')) {
       this.ConvertToBaseobj.imageObjectToBase64Promise(event).then(
         (res) => {
@@ -132,7 +131,6 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
         }
       )
     }
-
   }
 
   public onLongPress(event: any) {
