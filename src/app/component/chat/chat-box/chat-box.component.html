@@ -3,9 +3,9 @@
         <div class="row mx-0 header">
             <div class="col-11 name-section">
                 <div>
-                    <ng-container>
+                    <!-- <ng-container> -->
                         <h5>{{Name}}</h5>
-                    </ng-container>
+                    <!-- </ng-container> -->
                 </div>
             </div>
             <div class="col-1 option-bar">
@@ -95,8 +95,8 @@
                                 <label for="img-upload" class="custom-file-upload">
                                     <i class='bx bx-images'></i>
                                     Photos & Videos
-                                    <input id="img-upload" type="file" [formControl]="mediaFormControl"
-                                        (change)="onMediaSelect($event)" [value]="" accept="image/*,video/*"/>
+                                    <input id="img-upload" type="file"  multiple
+                                        (change)="onMediaSelect($event)" accept="image/*,video/*"/>
                                 </label>
                             </li>
                         </ul>

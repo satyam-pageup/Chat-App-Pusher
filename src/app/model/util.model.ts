@@ -7,3 +7,8 @@ export interface IUpdateChatList{
     message: string;
     dateTime: string;
 }
+
+export interface IMedia{
+    base64: string;
+    name: string;
+}
