@@ -36,13 +36,26 @@ export class PusherService extends ComponentBase{
     )
   }
 
-  sendTypingStatus(userId: number) {
-    return this.postAPICallPromise<number,string>(APIRoutes.isTyping(userId), userId ,this.headerOption);
+  sendTypingStatus(userId: number,istyping:boolean) {
+    // return this.http.post('ChatTriggered/TriggeredByTyping', { userId, isTyping }).toPromise();
+    return this.postAPICallPromise<number,string>(APIRoutes.isTyping(userId,istyping), userId ,this.headerOption);
+
+    // this.typingChannelPusher.trigger('client-typing-event', { userId, isTyping });
+    // this.pusherser.trigger("typing-channel", "client-typing-event", { message: "hello world" });
+    // this.typingChannelPusher.trigger('client-typing-event',{userId,isTyping});
+
   }
 
   getTypingChannel() {
     return this.typingChannelPusher;
   }
+
+  // initializePusher(): void {
+
+
+
+  //   this.pusher = new Pusher(environment.pusher.key, { cluster: 'ap2' });
+  // }
 
   public subscribeToChannel(channelName: string) {
     return this.pusher.subscribe(channelName);
