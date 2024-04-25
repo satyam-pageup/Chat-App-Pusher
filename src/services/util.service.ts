@@ -24,6 +24,7 @@ export class UtilService extends ComponentBase {
   public receiverId: number = -1;
   public currentOpenedChat: number = -1;
   public activeUserArray: string[] = [];
+  public onlineUserArray: number[] = [];
 
 
   public getLoggedInUserDetialsF() {

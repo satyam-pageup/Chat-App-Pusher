@@ -4,10 +4,11 @@
             <div class="col-11 name-section">
                 <div>
                     <!-- <ng-container> -->
-                        <h5>{{Name}}</h5>
-                        <p *ngIf="isReceiverTyping">typing...</p>
+                    <h5>{{Name}}</h5>
+                    <small *ngIf="isUserOnline">Online</small>
                     <!-- </ng-container> -->
                 </div>
+                <p *ngIf="isReceiverTyping">typing...</p>
             </div>
             <div class="col-1 option-bar">
                 <div class="btn-group dropup">
@@ -50,10 +51,17 @@
                                 style="color: black;"></i>
                             <span>
                                 {{ chats.messageDate| utcToIndianTime }}
-                                <i *ngIf="chats.status == 'sending'" style="color: black;font-size: 15px;  font-weight: bold;" class='bx bx-radio-circle'></i>
-                                <i *ngIf="chats.status == 'failed'" style="color: red;font-size: 15px; font-weight: bold;" class='bx bx-x-circle'></i>
-                                <i *ngIf="chats.status == 'success'"  style="color: rgb(51, 51, 51); font-size: 15px;  font-weight: bold;" class='bx bx-check'></i>
-                                <i *ngIf="chats.status == 'seen' " style="color: blue; font-size: 15px; font-weight: bold;" class='bx bx-check-double' ></i> 
+                                <i *ngIf="chats.status == 'sending'"
+                                    style="color: black;font-size: 15px;  font-weight: bold;"
+                                    class='bx bx-radio-circle'></i>
+                                <i *ngIf="chats.status == 'failed'"
+                                    style="color: red;font-size: 15px; font-weight: bold;" class='bx bx-x-circle'></i>
+                                <i *ngIf="chats.status == 'success'"
+                                    style="color: rgb(51, 51, 51); font-size: 15px;  font-weight: bold;"
+                                    class='bx bx-check'></i>
+                                <i *ngIf="chats.status == 'seen' "
+                                    style="color: blue; font-size: 15px; font-weight: bold;"
+                                    class='bx bx-check-double'></i>
                             </span>
                         </p>
                     </div>
@@ -68,8 +76,7 @@
                     <div class="selected-file-div-s" *ngFor="let item of mediaBase64Array; index as i">
                         <img [src]="item.base64" alt="">
                         {{item.name}}
-                        <i class='bx bx-x c-p' style="color: red;"
-                            (click)='removeMediaFromArray(i)'></i>
+                        <i class='bx bx-x c-p' style="color: red;" (click)='removeMediaFromArray(i)'></i>
                     </div>
                 </div>
                 }
@@ -103,12 +110,12 @@
                         </ul>
                     </div>
 
-                    <textarea rows="1" [(ngModel)]="message" (keyup)="autoGrowTextZone($event)" (input)="onTyping()" (keydown.enter)="onEnterKeyDown($event, messageList.length)"></textarea>
+                    <textarea rows="1" [(ngModel)]="message" (keyup)="autoGrowTextZone($event)" (input)="onTyping()"
+                        (keydown.enter)="onEnterKeyDown($event, messageList.length)"></textarea>
                     <i class='bx bx-send' (click)="sendMessage(messageList.length)"></i>
                 </div>
             </div>
-            <div *ngIf="userBlockState=='Unblock'"
-                class="row-mx-0 d-flex justify-content-center align-items-center">
+            <div *ngIf="userBlockState=='Unblock'" class="row-mx-0 d-flex justify-content-center align-items-center">
                 <p>Can't send a message to blocked contact</p>
             </div>
 

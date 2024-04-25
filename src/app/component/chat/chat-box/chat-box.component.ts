@@ -79,6 +79,7 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
   public isReceiverTyping: boolean = false;
   private channel!: Channel;
   public isCall: boolean = true;
+  public isUserOnline: boolean = false;
 
   private typingSubject = new Subject<string>();
   private typingSubscription: Subscription | undefined;
@@ -104,6 +105,10 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
       this.sendTypingStatus(false);
       this.isCall = true;
     });
+
+    
+    // if(this.isUserOnline)
+    //   this.isReceiverTyping=false;
   }
 
   private subscribeChannelByName(channelName: string) {
@@ -390,6 +395,10 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
       this._utilService.currentOpenedChat = res.id;
       this.options.index = 0;
       this.Name = res.name;
+
+      this.isUserOnline = this._utilService.onlineUserArray.includes(this.recevierId);
+      console.log(this._utilService.onlineUserArray);
+      
 
       this.postAPICallPromise<GetMessagePaginationI, GetMessageI<MessageI[]>>(APIRoutes.getMessageById(res.id, false), this.options, this.headerOption).then(
         (res) => {
