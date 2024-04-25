@@ -6,6 +6,7 @@ export const APIRoutes = {
     updateSystemToken: '/UpdateSystemToken',
     getChatList: '/CommunityMessage/GetChatBox',
     deleteMessage: '/CommunityMessage/DeleteMessage',
+    triggerUserOnline: '/ChatTriggered/TriggeredByOnline',
     getAllEmployee: '/UserEmployees',
     isTyping:(receiverId: number,isTyping:boolean) => `/ChatTriggered/TriggeredByTyping/${receiverId}/${isTyping}`,
     blockUser:(receiverId: number) => `/BlockUser/BlockUser/${receiverId}`,

@@ -25,6 +25,7 @@ export class AppComponent extends ComponentBase implements OnInit {
   public showChatMessages: boolean = false;
   private channel!: Channel;
   private activeUserChannel!: Channel;
+  private onlineUsersChannel!: Channel;
 
   constructor(private firebaseService: FirebaseService,
     public _utilService: UtilService,
@@ -45,6 +46,8 @@ export class AppComponent extends ComponentBase implements OnInit {
           this.showChatMessages = false;
       }
     )
+    this.subscribeUserChannel();
+
     this.subscribeChatChannel("chat-channel");
     this.subscribeActiveUserChannel();
   }
@@ -62,12 +65,14 @@ export class AppComponent extends ComponentBase implements OnInit {
       if (!isTokenExist) {
         this.showChatMessages = true;
         this._route.navigate(['/chat']);
+
       }
       else {
         this._route.navigate(['/login']);
       }
     }
   }
+
 
   public logout() {
     this.showChatMessages = false;
@@ -86,8 +91,6 @@ export class AppComponent extends ComponentBase implements OnInit {
   private subscribeActiveUserChannel() {
     this.activeUserChannel = this._pusherService.subscribeToChannel('active-user-channel');
     this.activeUserChannel.bind('active-user-event', (data: IUserStatus) => {
-
-
       if (!data.triggeredId.startsWith((this._utilService.loggedInUserId).toString())) {
         console.log(data.triggeredId);
         let i = 0;
@@ -106,6 +109,25 @@ export class AppComponent extends ComponentBase implements OnInit {
         }
         this._utilService.activeUserArray.push(data.triggeredId);
       }
+    });
+    console.log(this._utilService.activeUserArray);
+
+  }
+
+  private subscribeUserChannel() {
+    this.onlineUsersChannel = this._pusherService.subscribeToChannel("online-user-channel");
+    this.onlineUsersChannel.bind('online-user-event', (data: {userId:number}) => {
+      // this._pusherService.messageReceivedE.emit(data);
+      if (data.userId != this._utilService.loggedInUserId){
+        console.log(data.userId);
+        if(!this._utilService.onlineUserArray.includes(data.userId)){
+          this._utilService.onlineUserArray.push(data.userId);
+        }
+      }
+      console.log("data",data);
+      console.log(this._utilService.onlineUserArray);
+      
+      
     });
   }
 }
