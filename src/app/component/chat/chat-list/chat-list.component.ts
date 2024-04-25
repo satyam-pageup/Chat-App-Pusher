@@ -120,7 +120,7 @@ export class ChatListComponent extends ComponentBase implements OnInit, OnDestro
   public getChats(id: number, name: string, chat: ChatBoxI) {
 
     this._utilService.receiverId = id;
-    this.updateUserStatus();
+    this._pusherService.updateUserStatus(true);
 
     chat.newMessages = 0;
     const userChat: { id: number, name: string } = {
@@ -210,74 +210,11 @@ export class ChatListComponent extends ComponentBase implements OnInit, OnDestro
     )
   }
 
-  private updateOpenedChat(data: NumberString) {
-    this.updateChatG(data.id, data.data);
-  }
-
-  private updateChatG(id: number, data: string) {
-    const currentDateUTC = new Date().toISOString();
-    this.userChatList.forEach(
-      (userChat, i) => {
-        if (userChat.recieverId == id) {
-          userChat.lastMessage = data;
-          userChat.lastMessageDate = currentDateUTC;
-          const newChat = userChat;
-          this.userChatList.splice(i, 1);
-          this.userChatList.unshift(newChat);
-        }
-      }
-    )
-  }
-
-  private increaseChatCountF(data: NumberString) {
-    this.getAPICallPromise<ResponseIterableI<ChatBoxI[]>>(APIRoutes.getChatList, this.headerOption).then(
-      (res) => {
-        this.userChatList = res.iterableData;
-      }
-    )
-  }
-
-
-  private getAllUser() {
-    this.options.isPagination = false;
-    this.options.search = "";
-    this.options.index = 0;
-
-    this._utilService.search(this.options).subscribe(
-      (res) => {
-        let data: IGetAllUser[] = [];
-        data = res.iterableData
-        let channelList: string[] = [];
-        data.forEach(
-          (user) => {
-            let cName: string = '';
-            if (user.id < this._utilService.loggedInUserId) {
-              cName = `${user.id}-${this._utilService.loggedInUserId}`;
-            }
-            else {
-              cName = `${this._utilService.loggedInUserId}-${user.id}`;
-            }
-            channelList.push(cName);
-          }
-        );
-        this._pusherService.subcribeToChannelE.emit(channelList);
-      }
-    )
-  }
-
-
   @HostListener('document:click', ['$event'])
   public handleClick(event: MouseEvent) {
     this.searchResult = [];
   }
 
-  private updateUserStatus(){
-    this.postAPICallPromise<null, IResponseG<null>>(APIRoutes.updateUserStatus(this._utilService.receiverId), null, this.headerOption).then(
-      (res) =>{
-        this._toastreService.success(res.message);
-      }
-    )
-  }
 
   ngOnDestroy(): void {
     this.onDestroy$.next();

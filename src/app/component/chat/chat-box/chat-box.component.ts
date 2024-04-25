@@ -222,7 +222,7 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
       this._httpClient.post<IResponseG<MessageI>>(hitUrl, data).subscribe({
         next: (res) => {
           this._utilService.EUserPresenceCheckInChatList.emit(res.data);
-          this.messageList[index].status = this._utilService.activeUserArray.includes(`${this.recevierId}-${this._utilService.loggedInUserId}`)? 'seen' : 'success';
+          this.messageList[index].status = this._utilService.activeUserArray.includes(`${this.recevierId}-${this._utilService.loggedInUserId}-active`)? 'seen' : 'success';
           this.messageList[index].id = res.data.id;
           this.messageList[index].messageDate = res.data.messageDate;
           this.firebaseService.sendNotification({ receiverSystemToken: this.receiverStystemToken, title: "WhatsApp", body: data.message }, this._utilService.loggedInUserId);
@@ -384,6 +384,7 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
 
   private userChatEmitterSubcribedF() {
     this._utilService.EUserChat.subscribe((res) => {
+      this.message = "";
       this.recevierId = res.id;
       this._utilService.currentOpenedChat = res.id;
       this.options.index = 0;

@@ -48,10 +48,15 @@ export class AppComponent extends ComponentBase implements OnInit {
   }
 
   ngOnInit(): void {
+
+    document.addEventListener('visibilitychange', () => {
+      if (this._utilService.receiverId > -1) {
+        this._pusherService.updateUserStatus(!document.hidden);
+      }
+    })
+
     if (localStorage.getItem("jwtToken")) {
-
       let isTokenExist = this._tokenDecodeService.getDecodedAccessToken(localStorage.getItem("jwtToken")!);
-
       if (!isTokenExist) {
         this.showChatMessages = true;
         this._route.navigate(['/chat']);
@@ -59,7 +64,6 @@ export class AppComponent extends ComponentBase implements OnInit {
       else {
         this._route.navigate(['/login']);
       }
-
     }
   }
 
@@ -91,8 +95,8 @@ export class AppComponent extends ComponentBase implements OnInit {
           }
         }
 
-        const updateChatId: string = `${this._utilService.currentOpenedChat}-${this._utilService.loggedInUserId}`;
-        if (data.triggeredId == updateChatId) {
+        const idToMarkMessageRead: string = `${this._utilService.currentOpenedChat}-${this._utilService.loggedInUserId}-active`;
+        if (data.triggeredId == idToMarkMessageRead) {
           this._utilService.EMarkMessageRead.emit();
         }
 

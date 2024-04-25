@@ -11,7 +11,7 @@ export const APIRoutes = {
     blockUser:(receiverId: number) => `/BlockUser/BlockUser/${receiverId}`,
     unBlockUser:(receiverId: number) => `/BlockUser/RemoveBlocked/${receiverId}`,
     sendMessage: (receiverId: number) => `/CommunityMessage/SendMessage/${receiverId}`,
-    getMessageById: (id: number) => `/CommunityMessage/DisplayMessage/${id}`,
+    getMessageById: (id: number) => `/CommunityMessage/DisplayMessage/${id}/false`,
     deleteConversationById: (id: number) => `/CommunityMessage/DeleteConversation/${id}`,
-    updateUserStatus: (receiverId: number) => `/ChatTriggered/TriggeredBySeen/${receiverId}`
+    updateUserStatus: (receiverId: number, status: boolean) => `/ChatTriggered/TriggeredBySeen/${receiverId}?status=${status}`
 }
