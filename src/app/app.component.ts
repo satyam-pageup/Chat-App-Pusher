@@ -29,12 +29,12 @@ export class AppComponent extends ComponentBase implements OnInit {
     public _utilService: UtilService,
     private _route: Router,
     private _pusherService: PusherService,
-    private _tokenDecodeService:TokenDecodeService
+    private _tokenDecodeService: TokenDecodeService
   ) {
     super();
     this.firebaseService.requestPermission();
     this.firebaseService.listen();
-    this._utilService.showUser.subscribe(
+    this._utilService.EShowUser.subscribe(
       (val: boolean) => {
         if (val) {
           this.showChatMessages = true;
@@ -52,11 +52,11 @@ export class AppComponent extends ComponentBase implements OnInit {
 
       let isTokenExist = this._tokenDecodeService.getDecodedAccessToken(localStorage.getItem("jwtToken")!);
 
-      if(!isTokenExist){
+      if (!isTokenExist) {
         this.showChatMessages = true;
         this._route.navigate(['/chat']);
       }
-      else{
+      else {
         this._route.navigate(['/login']);
       }
 
@@ -79,22 +79,25 @@ export class AppComponent extends ComponentBase implements OnInit {
     this.activeUserChannel = this._pusherService.subscribeToChannel('active-user-channel');
     this.activeUserChannel.bind('active-user-event', (data: IUserStatus) => {
 
-      if(!data.triggeredId.startsWith((this._utilService.loggedInUserId).toString())){
+      if (!data.triggeredId.startsWith((this._utilService.loggedInUserId).toString())) {
+        let i = 0;
         const id: string = data.triggeredId.split('-')[0];
-        let i=0;
-        while(i<this._utilService.activeUserArray.length){
-          if(this._utilService.activeUserArray[i].startsWith(id)){
+        while (i < this._utilService.activeUserArray.length) {
+          if (this._utilService.activeUserArray[i].startsWith(id)) {
             this._utilService.activeUserArray.splice(i, 1);
           }
-          else{
+          else {
             i++;
           }
         }
 
+        const updateChatId: string = `${this._utilService.currentOpenedChat}-${this._utilService.loggedInUserId}`;
+        if (data.triggeredId == updateChatId) {
+          this._utilService.EMarkMessageRead.emit();
+        }
+
         this._utilService.activeUserArray.push(data.triggeredId);
       }
-
-      console.log(this._utilService.activeUserArray);
     });
   }
 }

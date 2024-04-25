@@ -5,20 +5,18 @@ import { IGetAllUser, UserI } from '../app/response/user.response';
 import { ComponentBase } from '../app/shared/class/ComponentBase.class';
 import { IResponseG, ResponseIterableI } from '../app/response/responseG.response';
 import { APIRoutes } from '../app/shared/constants/apiRoutes.constant';
-import { PusherService } from './pusher.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UtilService extends ComponentBase {
 
-  private _pusherService = inject(PusherService);
-
-  public chatClickedE: EventEmitter<number> = new EventEmitter<number>();
-  public showUser: EventEmitter<boolean> = new EventEmitter<boolean>();
-  public userChatEmitter: EventEmitter<{ id: number, name: string }> = new EventEmitter<{ id: number, name: string }>();
-  public UserPresenceCheckInChatListE: EventEmitter<MessageI> = new EventEmitter<MessageI>();
-  public updateChatListE: EventEmitter<IUpdateChatList> = new EventEmitter<IUpdateChatList>();
+  public EChatClicked: EventEmitter<number> = new EventEmitter<number>();
+  public EShowUser: EventEmitter<boolean> = new EventEmitter<boolean>();
+  public EUserChat: EventEmitter<{ id: number, name: string }> = new EventEmitter<{ id: number, name: string }>();
+  public EUserPresenceCheckInChatList: EventEmitter<MessageI> = new EventEmitter<MessageI>();
+  public EUpdateChatList: EventEmitter<IUpdateChatList> = new EventEmitter<IUpdateChatList>();
+  public EMarkMessageRead: EventEmitter<null> = new EventEmitter<null>();
 
   public isUserChatAlreadyExists: boolean = false;
   public loggedInUserId: number = -1;

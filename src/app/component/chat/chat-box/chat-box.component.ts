@@ -83,6 +83,11 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
     this.isSearchedUserChat = false;
 
     this.subscribeChannelByName("typing-channel");
+    _utilService.EMarkMessageRead.subscribe(() =>{
+      this.messageList.forEach((message) =>{
+        message.status = 'seen';
+      })
+    })
   }
 
   ngOnInit(): void {
@@ -216,8 +221,7 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
       const hitUrl: string = `${environment.baseUrl}${APIRoutes.sendMessage(this.recevierId)}`
       this._httpClient.post<IResponseG<MessageI>>(hitUrl, data).subscribe({
         next: (res) => {
-          console.log(this._utilService.activeUserArray);
-          this._utilService.UserPresenceCheckInChatListE.emit(res.data);
+          this._utilService.EUserPresenceCheckInChatList.emit(res.data);
           this.messageList[index].status = this._utilService.activeUserArray.includes(`${this.recevierId}-${this._utilService.loggedInUserId}`)? 'seen' : 'success';
           this.messageList[index].id = res.data.id;
           this.messageList[index].messageDate = res.data.messageDate;
@@ -337,7 +341,7 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
   }
 
   private subcritpionF() {
-    this._utilService.chatClickedE.subscribe(
+    this._utilService.EChatClicked.subscribe(
       (id: number) => {
         this.recevierId = id;
 
@@ -372,14 +376,14 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
       }
       else {
         if (msg.receiverId == this._utilService.loggedInUserId) {
-          this._utilService.UserPresenceCheckInChatListE.emit(msg);
+          this._utilService.EUserPresenceCheckInChatList.emit(msg);
         }
       }
     })
   }
 
   private userChatEmitterSubcribedF() {
-    this._utilService.userChatEmitter.subscribe((res) => {
+    this._utilService.EUserChat.subscribe((res) => {
       this.recevierId = res.id;
       this._utilService.currentOpenedChat = res.id;
       this.options.index = 0;

@@ -10,7 +10,7 @@ export const environment = {
     measurementId: "G-ZLZ8HHMJCX",
     vapidKey: "BCgpb20Vw6RSpVAbAfReHUa09D8IDQ03EoJ1qVRwwjTBJFQp_kQT4fDND24U8_n0awcr2UfpawnGv8vk9i813aM"
   },
-  baseUrl: "http://192.168.1.31:2030/api",
+  baseUrl: "http://192.168.1.13:2030/api",
   // baseUrl: "http://192.168.1.36:2030/api",
   //   baseUrl: "/api",
   tokenName: "jwtToken",
