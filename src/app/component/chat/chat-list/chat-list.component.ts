@@ -10,6 +10,7 @@ import { IEmplyeeOptions } from '../../../model/option.model';
 import { Subject, debounceTime, takeUntil } from 'rxjs';
 import { PusherService } from '../../../../services/pusher.service';
 import { ConfirmationComponent } from '../../../shared/component/confirmation/confirmation.component';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-chat-list',
@@ -26,7 +27,9 @@ export class ChatListComponent extends ComponentBase implements OnInit, OnDestro
   public searchUser: string = "";
   public selectedIndex: number = -1;
   public userSearchSubject: Subject<string> = new Subject<string>();
+
   private onDestroy$: Subject<void> = new Subject<void>();
+  private tabNotificationCount$: Subject<void> = new Subject<void>();
   private options: IEmplyeeOptions = {
     isPagination: false,
     index: 0,
@@ -36,7 +39,9 @@ export class ChatListComponent extends ComponentBase implements OnInit, OnDestro
     orderBy: ""
   }
 
-  constructor(public _utilService: UtilService, private _pusherService: PusherService) {
+  constructor(public _utilService: UtilService, private _pusherService: PusherService,
+    private _titleService: Title
+  ) {
     super();
 
     _utilService.EUpdateChatList.subscribe(
@@ -57,6 +62,7 @@ export class ChatListComponent extends ComponentBase implements OnInit, OnDestro
 
     _utilService.EUserPresenceCheckInChatList.subscribe((msg: MessageI) => {
       let isUserChatAlreadyExists: boolean = false;
+      let isCall: boolean = false;
 
 
       for (let i = 0; i < this.userChatList.length; i++) {
@@ -64,15 +70,33 @@ export class ChatListComponent extends ComponentBase implements OnInit, OnDestro
           isUserChatAlreadyExists = true;
           this.userChatList[i].lastMessage = msg.message;
           this.userChatList[i].lastMessageDate = msg.messageDate;
+
+          if(this.userChatList[i].newMessages==0){
+            isCall = true;
+          }
           this.userChatList[i].newMessages++;
           this.bringChatToTop(this.userChatList[i], i);
           break;
         }
       }
 
+
+      if(isCall)
+        this.tabNotificationCount$.next();
+
       if (!isUserChatAlreadyExists) {
         this.getChatList();
       }
+    })
+
+    this.tabNotificationCount$.subscribe(() => {
+      let newMessage: number = 0;
+      this.userChatList.forEach(
+        (msg) => {
+          if (msg.newMessages > 0) newMessage++;
+        }
+      )
+      this._titleService.setTitle(`(${newMessage})QuickChat`);
     })
   }
 
@@ -206,6 +230,7 @@ export class ChatListComponent extends ComponentBase implements OnInit, OnDestro
     this.getAPICallPromise<ResponseIterableI<ChatBoxI[]>>(APIRoutes.getChatList, this.headerOption).then(
       (res) => {
         this.userChatList = res.iterableData;
+        this.tabNotificationCount$.next();
       }
     )
   }

@@ -10,6 +10,7 @@ import { MessageI } from './model/chat.model';
 import { Channel } from 'pusher-js';
 import { TokenDecodeService } from '../services/token-decode.service';
 import { IUserStatus } from './model/util.model';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-root',
@@ -29,7 +30,8 @@ export class AppComponent extends ComponentBase implements OnInit {
     public _utilService: UtilService,
     private _route: Router,
     private _pusherService: PusherService,
-    private _tokenDecodeService: TokenDecodeService
+    private _tokenDecodeService: TokenDecodeService,
+    private _titleService: Title
   ) {
     super();
     this.firebaseService.requestPermission();
@@ -70,6 +72,7 @@ export class AppComponent extends ComponentBase implements OnInit {
   public logout() {
     this.showChatMessages = false;
     localStorage.clear();
+    this._titleService.setTitle('Quick-Chat');
     this._route.navigate(['/login']);
   }
 
@@ -79,11 +82,14 @@ export class AppComponent extends ComponentBase implements OnInit {
       this._pusherService.messageReceivedE.emit(data);
     });
   }
+
   private subscribeActiveUserChannel() {
     this.activeUserChannel = this._pusherService.subscribeToChannel('active-user-channel');
     this.activeUserChannel.bind('active-user-event', (data: IUserStatus) => {
 
+
       if (!data.triggeredId.startsWith((this._utilService.loggedInUserId).toString())) {
+        console.log(data.triggeredId);
         let i = 0;
         const id: string = data.triggeredId.split('-')[0];
         while (i < this._utilService.activeUserArray.length) {
@@ -94,12 +100,10 @@ export class AppComponent extends ComponentBase implements OnInit {
             i++;
           }
         }
-
         const idToMarkMessageRead: string = `${this._utilService.currentOpenedChat}-${this._utilService.loggedInUserId}-active`;
         if (data.triggeredId == idToMarkMessageRead) {
           this._utilService.EMarkMessageRead.emit();
         }
-
         this._utilService.activeUserArray.push(data.triggeredId);
       }
     });
