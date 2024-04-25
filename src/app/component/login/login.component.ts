@@ -39,7 +39,7 @@ export class LoginComponent extends ComponentBase {
           this._router.navigate([APPRoutes.chat]);
           if (res.token) {
             localStorage.setItem("jwtToken", res.token);
-            this._utilService.showUser.emit(true);
+            this._utilService.EShowUser.emit(true);
           }
         }
       )

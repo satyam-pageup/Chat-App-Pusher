@@ -39,7 +39,7 @@ export class ChatListComponent extends ComponentBase implements OnInit, OnDestro
   constructor(public _utilService: UtilService, private _pusherService: PusherService) {
     super();
 
-    _utilService.updateChatListE.subscribe(
+    _utilService.EUpdateChatList.subscribe(
       (res: IUpdateChatList) => {
         console.log(res);
         for (let i = 0; i < this.userChatList.length; i++) {
@@ -55,7 +55,7 @@ export class ChatListComponent extends ComponentBase implements OnInit, OnDestro
       }
     )
 
-    _utilService.UserPresenceCheckInChatListE.subscribe((msg: MessageI) => {
+    _utilService.EUserPresenceCheckInChatList.subscribe((msg: MessageI) => {
       let isUserChatAlreadyExists: boolean = false;
 
 
@@ -128,7 +128,7 @@ export class ChatListComponent extends ComponentBase implements OnInit, OnDestro
       name
     }
     this._utilService.isUserChatAlreadyExists = true;
-    this._utilService.userChatEmitter.emit(userChat);
+    this._utilService.EUserChat.emit(userChat);
   }
 
   public deleteConversationById(event: MouseEvent, receiverId: number) {
@@ -141,7 +141,7 @@ export class ChatListComponent extends ComponentBase implements OnInit, OnDestro
             (res) => {
               if (this._utilService.currentOpenedChat == receiverId) {
                 this._utilService.currentOpenedChat = -1;
-                this._utilService.chatClickedE.emit(-1);
+                this._utilService.EChatClicked.emit(-1);
               }
               this.getChatList();
               this._toastreService.success(res.message);
@@ -182,7 +182,7 @@ export class ChatListComponent extends ComponentBase implements OnInit, OnDestro
       name
     }
 
-    this._utilService.userChatEmitter.emit(obj);
+    this._utilService.EUserChat.emit(obj);
     this.searchResult = [];
     this.searchUser = "";
 

@@ -1,6 +1,6 @@
 <div class="conatiner d-flex justify-content-around align-items-center m-4" *ngIf="showChatMessages">
     <div class=" d-flex justify-content-center align-items-center">
-        <h2 class="m-0">Hello {{_utilService.loggedInUserName}}</h2>
+        <h2 class="m-0">Hello {{_utilService.loggedInUserName}}, {{_utilService.loggedInUserId}}</h2>
     </div>
     <div>
         <button class="btn btn-primary" (click)="logout()">Logout</button>
