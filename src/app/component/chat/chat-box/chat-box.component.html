@@ -5,7 +5,7 @@
                 <div>
                     <!-- <ng-container> -->
                         <h5>{{Name}}</h5>
-                        <p *ngIf="isTyping">typing...</p>
+                        <p *ngIf="isReceiverTyping">typing...</p>
                     <!-- </ng-container> -->
                 </div>
             </div>
@@ -103,7 +103,7 @@
                         </ul>
                     </div>
 
-                    <textarea rows="1" [(ngModel)]="message" (keyup)="autoGrowTextZone($event)" (input)="onTyping()" (blur)="onStopTyping()" (keydown.enter)="onEnterKeyDown($event, messageList.length)"></textarea>
+                    <textarea rows="1" [(ngModel)]="message" (keyup)="autoGrowTextZone($event)" (input)="onTyping()" (keydown.enter)="onEnterKeyDown($event, messageList.length)"></textarea>
                     <i class='bx bx-send' (click)="sendMessage(messageList.length)"></i>
                 </div>
             </div>

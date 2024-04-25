@@ -39,9 +39,9 @@ export class PusherService extends ComponentBase{
     // this.initializePusher();
   }
 
-  sendTypingStatus(userId: number) {
+  sendTypingStatus(userId: number,istyping:boolean) {
     // return this.http.post('ChatTriggered/TriggeredByTyping', { userId, isTyping }).toPromise();
-    return this.postAPICallPromise<number,string>(APIRoutes.isTyping(userId), userId ,this.headerOption);
+    return this.postAPICallPromise<number,string>(APIRoutes.isTyping(userId,istyping), userId ,this.headerOption);
 
     // this.typingChannelPusher.trigger('client-typing-event', { userId, isTyping });
     // this.pusherser.trigger("typing-channel", "client-typing-event", { message: "hello world" });
@@ -54,6 +54,9 @@ export class PusherService extends ComponentBase{
   }
 
   // initializePusher(): void {
+
+
+
   //   this.pusher = new Pusher(environment.pusher.key, { cluster: 'ap2' });
   // }
 

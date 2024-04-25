@@ -15,6 +15,8 @@ import { DatePipe } from '@angular/common';
 import { environment } from '../../../../environments/environment';
 import { IMedia, IUpdateChatList } from '../../../model/util.model';
 import { Channel } from 'pusher-js';
+import { debounceTime } from 'rxjs/operators';
+import { Observable, Subject, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-chat-box',
@@ -73,48 +75,52 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
   public showChatMessages: boolean = false;
   public showEmojiPicker: boolean = false;
   public userBlockState: string = '';
-
-  public isTyping: boolean = false;
+  public isSenderTyping: boolean = false;
+  public isReceiverTyping: boolean = false;
   private channel!: Channel;
+  public isCall: boolean = true;
+
+  private typingSubject = new Subject<string>();
+  private typingSubscription: Subscription | undefined;
+
 
   constructor(public _utilService: UtilService, private firebaseService: FirebaseService,
     private elementRef: ElementRef, private _pusherService: PusherService, private _datePipe: DatePipe) {
     super();
     this.isSearchedUserChat = false;
-
     this.subscribeChannelByName("typing-channel");
+
   }
 
   ngOnInit(): void {
     this.subcritpionF();
+    this.typingSubscription = this.typingSubject.pipe(
+      debounceTime(1000)
+    ).subscribe((res) => {
+      this.sendTypingStatus(false);
+      this.isCall = true;
+    });
   }
 
   private subscribeChannelByName(channelName: string) {
     this.channel = this._pusherService.subscribeToChannel(channelName);
     this.channel.bind('typing-event', (data: any) => {
-      console.log(data);
       if (data.receiverId == this._utilService.loggedInUserId && data.typingUserId == this.recevierId) {
-        this.isTyping = true;
+        this.isReceiverTyping = data.status;
       }
-      setTimeout(() => {
-        this.isTyping=false;
-      }, 2000);
     });
   }
 
   public sendTypingStatus(isTyping: boolean) {
-    if (isTyping == true)
-      this._pusherService.sendTypingStatus(this.recevierId);
+    this._pusherService.sendTypingStatus(this.recevierId, isTyping);
   }
 
   public onTyping() {
-    setTimeout(() => {
+    this.typingSubject.next(this.message);
+    if (this.isCall) {
       this.sendTypingStatus(true);
-    }, 1000);
-  }
-
-  public onStopTyping() {
-    this.sendTypingStatus(false);
+      this.isCall = false;
+    }
   }
 
 
@@ -191,7 +197,6 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
   }
 
   public sendMessage(index: number) {
-
     this.showEmojiPicker = false;
     this.isScrollToBottom = true;
     this.isSendMsg = true;
@@ -218,7 +223,7 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
         next: (res) => {
           console.log(this._utilService.activeUserArray);
           this._utilService.UserPresenceCheckInChatListE.emit(res.data);
-          this.messageList[index].status = this._utilService.activeUserArray.includes(`${this.recevierId}-${this._utilService.loggedInUserId}`)? 'seen' : 'success';
+          this.messageList[index].status = this._utilService.activeUserArray.includes(`${this.recevierId}-${this._utilService.loggedInUserId}`) ? 'seen' : 'success';
           this.messageList[index].id = res.data.id;
           this.messageList[index].messageDate = res.data.messageDate;
           this.firebaseService.sendNotification({ receiverSystemToken: this.receiverStystemToken, title: "WhatsApp", body: data.message }, this._utilService.loggedInUserId);
@@ -340,10 +345,7 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
     this._utilService.chatClickedE.subscribe(
       (id: number) => {
         this.recevierId = id;
-
-
         // this._pusherService.subscribeUserChatChannel('active');
-
         this.getChatByIdListen(id);
         if (id > -1)
           this.showChatMessages = true;
@@ -385,7 +387,7 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
       this.options.index = 0;
       this.Name = res.name;
 
-      this.postAPICallPromise<GetMessagePaginationI, GetMessageI<MessageI[]>>(APIRoutes.getMessageById(res.id), this.options, this.headerOption).then(
+      this.postAPICallPromise<GetMessagePaginationI, GetMessageI<MessageI[]>>(APIRoutes.getMessageById(res.id, false), this.options, this.headerOption).then(
         (res) => {
           this.showChatMessages = true;
           this.messageList = [];
@@ -421,7 +423,7 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
 
   private getChatById() {
     if (this._utilService.currentOpenedChat != -1) {
-      this.postAPICallPromise<GetMessagePaginationI, GetMessageI<MessageI[]>>(APIRoutes.getMessageById(this._utilService.currentOpenedChat), this.options, this.headerOption).then(
+      this.postAPICallPromise<GetMessagePaginationI, GetMessageI<MessageI[]>>(APIRoutes.getMessageById(this._utilService.currentOpenedChat, false), this.options, this.headerOption).then(
         (res) => {
           if (this.isSendMsg) {
             this.messageList = [];
@@ -475,7 +477,7 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
   private getChatByIdListen(id: number) {
     this.options.index = 0;
     if (this._utilService.currentOpenedChat != -1) {
-      this.postAPICallPromise<GetMessagePaginationI, GetMessageI<MessageI[]>>(APIRoutes.getMessageById(id), this.options, this.headerOption).then(
+      this.postAPICallPromise<GetMessagePaginationI, GetMessageI<MessageI[]>>(APIRoutes.getMessageById(id, false), this.options, this.headerOption).then(
         (res) => {
 
           res.data.data.forEach(
@@ -507,6 +509,13 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
       )
     }
   }
+
+  ngOnDestroy(): void {
+    if (this.typingSubscription) {
+      this.typingSubscription.unsubscribe();
+    }
+  }
+
 }
 
 
