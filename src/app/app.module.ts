@@ -28,6 +28,7 @@ import { DatePipe } from '@angular/common';
 import { LongPressDirective } from './shared/directives/long-press.directive';
 import { LoaderComponent } from './shared/component/loader/loader.component';
 import { loaderInterceptor } from './interceptor/loader.interceptor';
+import { GroupChatComponent } from './component/chat/group-chat/group-chat.component';
 
 initializeApp(environment.firebase);
 @NgModule({
@@ -45,6 +46,7 @@ initializeApp(environment.firebase);
     ChatlistTimeAgoPipe,
     LongPressDirective,
     LoaderComponent,
+    GroupChatComponent,
   ],
   imports: [
     BrowserModule,

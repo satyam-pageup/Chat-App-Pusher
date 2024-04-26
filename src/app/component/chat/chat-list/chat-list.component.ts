@@ -11,6 +11,7 @@ import { Subject, debounceTime, takeUntil } from 'rxjs';
 import { PusherService } from '../../../../services/pusher.service';
 import { ConfirmationComponent } from '../../../shared/component/confirmation/confirmation.component';
 import { Title } from '@angular/platform-browser';
+import { GroupChatComponent } from '../group-chat/group-chat.component';
 
 @Component({
   selector: 'app-chat-list',
@@ -19,12 +20,14 @@ import { Title } from '@angular/platform-browser';
 })
 export class ChatListComponent extends ComponentBase implements OnInit, OnDestroy {
 
+  @ViewChild(GroupChatComponent) groupChatComponentObj!: GroupChatComponent;
   @ViewChild(ConfirmationComponent) ConfirmationComponentObj!: ConfirmationComponent;
 
   public userChatList: ChatBoxI[] = [];
   public allUserList: IGetAllUser[] = [];
   public searchResult: IGetAllUser[] = [];
   public searchUser: string = "";
+  
   public selectedIndex: number = -1;
   public userSearchSubject: Subject<string> = new Subject<string>();
 
@@ -142,6 +145,10 @@ export class ChatListComponent extends ComponentBase implements OnInit, OnDestro
     this.userChatList.unshift(chat);
   }
 
+
+  public createGroup(){
+    this.groupChatComponentObj.openModal();
+  }
 
   public getChats(id: number, name: string, chat: ChatBoxI) {
 
