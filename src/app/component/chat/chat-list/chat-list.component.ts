@@ -105,7 +105,8 @@ export class ChatListComponent extends ComponentBase implements OnInit, OnDestro
       (res) => {
         this._utilService.loggedInUserId = res.data.id;
         this._utilService.loggedInUserName = res.data.name;
-        this._pusherService.onlineUserF(res.data.id);
+        this._pusherService.onlineUserF(res.data.id,true);
+        // this._pusherService.onlineUserF(res.data.id);
 
         this._utilService.EShowUser.emit(true);
         this.getChatList();
@@ -141,10 +142,11 @@ export class ChatListComponent extends ComponentBase implements OnInit, OnDestro
 
 
   public getChats(id: number, name: string, chat: ChatBoxI) {
-
+    console.log(id);
+    
     this._utilService.receiverId = id;
     this._pusherService.updateUserStatus(true);
-
+    this._pusherService.onlineUserF(id,false);
     chat.newMessages = 0;
     const userChat: { id: number, name: string } = {
       id,

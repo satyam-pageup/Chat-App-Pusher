@@ -27,7 +27,6 @@ export class AppComponent extends ComponentBase implements OnInit {
   public isShowLoader: boolean = false;
   private channel!: Channel;
   private activeUserChannel!: Channel;
-  private onlineUsersChannel!: Channel;
 
   constructor(private firebaseService: FirebaseService,
     public _utilService: UtilService,
@@ -39,7 +38,7 @@ export class AppComponent extends ComponentBase implements OnInit {
   ) {
     super();
 
-    _loaderService.showLoader$.subscribe(
+    this._loaderService.showLoader$.subscribe(
       ()=>{
         if(_loaderService.apiCnt > 0){
           this.isShowLoader = true;
@@ -58,7 +57,7 @@ export class AppComponent extends ComponentBase implements OnInit {
     }
     else{
       // token exists => checking validity of token
-      const data = _tokenDecodeService.getDecodedAccessToken(localStorage.getItem("jwtToken") as string);
+      const data = this._tokenDecodeService.getDecodedAccessToken(localStorage.getItem("jwtToken") as string);
       if(data){
         this._router.navigate(['/chat']);
         this.showChatMessages = true;
@@ -76,7 +75,6 @@ export class AppComponent extends ComponentBase implements OnInit {
           this.showChatMessages = false;
       }
     )
-    this.subscribeUserChannel();
 
     this.subscribeChatChannel("chat-channel");
     this.subscribeActiveUserChannel();
@@ -93,6 +91,7 @@ export class AppComponent extends ComponentBase implements OnInit {
 
 
   public logout() {
+    this._pusherService.onlineUserF(this._utilService.loggedInUserId,false);
     this.showChatMessages = false;
     localStorage.clear();
     this._titleService.setTitle('Quick-Chat');
@@ -130,14 +129,5 @@ export class AppComponent extends ComponentBase implements OnInit {
     });
   }
 
-  private subscribeUserChannel() {
-    this.onlineUsersChannel = this._pusherService.subscribeToChannel("online-user-channel");
-    this.onlineUsersChannel.bind('online-user-event', (data: {userId:number}) => {
-      if (data.userId != this._utilService.loggedInUserId){
-        if(!this._utilService.onlineUserArray.includes(data.userId)){
-          this._utilService.onlineUserArray.push(data.userId);
-        }
-      }
-    });
-  }
+ 
 }

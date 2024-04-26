@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 
 export class loaderInterceptor implements HttpInterceptor{
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    console.log("req.headers: ", req.headers);
+    // console.log("req.headers: ", req.headers);
     return next.handle(req);
   }
 }

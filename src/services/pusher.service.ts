@@ -1,5 +1,5 @@
 import { EventEmitter, Injectable } from '@angular/core';
-import Pusher from 'pusher-js';
+import Pusher, { Channel } from 'pusher-js';
 import { environment } from '../environments/environment';
 import { MessageI } from '../app/model/chat.model';
 import { ComponentBase } from '../app/shared/class/ComponentBase.class';
@@ -16,6 +16,7 @@ export class PusherService extends ComponentBase{
   public activeUserChannel: any;
   public activeUserChannelPusher: any;
   public typingChannelPusher: any;
+  public onlineUserChannel!:Channel;
 
   public subcribeToChannelE: EventEmitter<string[]> = new EventEmitter<string[]>();
   public messageReceivedE: EventEmitter<MessageI> = new EventEmitter<MessageI>();
@@ -23,6 +24,7 @@ export class PusherService extends ComponentBase{
   constructor(private _utilService: UtilService) {
     super();
     this.typingChannelPusher = this.pusher.subscribe('typing-channel');
+    this.onlineUserChannel = this.subscribeToChannel("online-user-channel");
   }
 
   
@@ -33,8 +35,8 @@ export class PusherService extends ComponentBase{
     )
   }
 
-  public onlineUserF(id: number){
-    this.postAPICallPromise<null, IResponseG<null>>(APIRoutes.triggerUserOnline, null, this.headerOption).then(
+  public onlineUserF(id: number, status:boolean){
+    this.postAPICallPromise<null, IResponseG<null>>(APIRoutes.triggerUserOnline(id,status), null, this.headerOption).then(
       (res) =>{
       }
     )

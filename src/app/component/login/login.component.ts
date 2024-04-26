@@ -9,6 +9,7 @@ import { APIRoutes } from '../../shared/constants/apiRoutes.constant';
 import { ResponseDataI } from '../../response/responseG.response';
 import { UserI } from '../../response/user.response';
 import { TokenDecodeService } from '../../../services/token-decode.service';
+import { PusherService } from '../../../services/pusher.service';
 
 @Component({
   selector: 'app-login',
@@ -17,7 +18,7 @@ import { TokenDecodeService } from '../../../services/token-decode.service';
 })
 export class LoginComponent extends ComponentBase {
 
-  constructor(private _utilService: UtilService, private _tokenDecodeService: TokenDecodeService) {
+  constructor(private _utilService: UtilService, private _tokenDecodeService: TokenDecodeService,private _pusherService:PusherService) {
     super();
     if (localStorage.getItem("jwtToken")) {
       // token exists => checking validity of token
@@ -50,6 +51,7 @@ export class LoginComponent extends ComponentBase {
           if (res.token) {
             localStorage.setItem("jwtToken", res.token);
             this._utilService.EShowUser.emit(true);
+            this._pusherService.onlineUserF(res.data.id,true);
           }
         }
       )

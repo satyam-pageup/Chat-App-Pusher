@@ -6,6 +6,7 @@
                     <!-- <ng-container> -->
                     <h5>{{Name}}</h5>
                     <small *ngIf="isUserOnline">Online</small>
+                    <small *ngIf="!isUserOnline">offline</small>
                     <!-- </ng-container> -->
                 </div>
                 <p *ngIf="isReceiverTyping">typing...</p>
