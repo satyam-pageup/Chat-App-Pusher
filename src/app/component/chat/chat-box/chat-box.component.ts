@@ -17,6 +17,7 @@ import { IMedia, IUpdateChatList } from '../../../model/util.model';
 import { Channel } from 'pusher-js';
 import { debounceTime } from 'rxjs/operators';
 import { Observable, Subject, Subscription } from 'rxjs';
+import { HttpHeaders } from '@angular/common/http';
 
 @Component({
   selector: 'app-chat-box',
@@ -227,8 +228,12 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
 
       this._pusherService.triggerEvent('active-channel', 'active-event', data.message);
 
+      let myNewHeader: HttpHeaders = new HttpHeaders({
+        isSendNotification: 'true',
+        isSilentCall: 'true'
+    })
       const hitUrl: string = `${environment.baseUrl}${APIRoutes.sendMessage(this.recevierId)}`
-      this._httpClient.post<IResponseG<MessageI>>(hitUrl, data).subscribe({
+      this._httpClient.post<IResponseG<MessageI>>(hitUrl, data, {headers: myNewHeader} ).subscribe({
         next: (res) => {
           this._utilService.EUserPresenceCheckInChatList.emit(res.data);
           this.messageList[index].status = this._utilService.activeUserArray.includes(`${this.recevierId}-${this._utilService.loggedInUserId}-active`)? 'seen' : 'success';

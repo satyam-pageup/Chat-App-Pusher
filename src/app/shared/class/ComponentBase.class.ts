@@ -27,17 +27,14 @@ export class ComponentBase {
 
     public getAPICallPromise<R>(url: string, hOption: HeaderOption): Promise<R> {
 
-
-        if (hOption.isSendNotification) {
-            this.myHeader = new HttpHeaders({
-                isSendNotification: 'true',
-                isSilentCall: 'true'
-            })
-        }
+        let myNewHeader: HttpHeaders = new HttpHeaders({
+            isSendNotification: 'true',
+            isSilentCall: (hOption.isSilentCall)? 'true': 'false'
+        })
 
         const hitUrl: string = `${this.baseUrl}${url}`;
         const getPromise = new Promise<R>((resolve, reject) => {
-            this._httpClient.get<R>(hitUrl, { headers: this.myHeader }).subscribe({
+            this._httpClient.get<R>(hitUrl, { headers: myNewHeader}).subscribe({
                 next: (res) => {
                     resolve(res);
                     this.isBtnLoaderActive = false;
@@ -57,7 +54,7 @@ export class ComponentBase {
 
     public postAPICallPromise<D, R>(url: string, data: D, hOption: HeaderOption): Promise<R> {
 
-        this.myHeader = new HttpHeaders({
+        let myNewHeader: HttpHeaders = new HttpHeaders({
             isSendNotification: 'true',
             isSilentCall: 'true'
         })
@@ -65,7 +62,7 @@ export class ComponentBase {
         let hitUrl: string = `${this.baseUrl}${url}`;
 
         const postPromise = new Promise<R>((resolve, reject) => {
-            this._httpClient.post<R>(hitUrl, data, {headers: this.myHeader}).subscribe({
+            this._httpClient.post<R>(hitUrl, data, {headers: myNewHeader}).subscribe({
                 next: (res) => {
                     resolve(res);
                     this.isBtnLoaderActive = false;
