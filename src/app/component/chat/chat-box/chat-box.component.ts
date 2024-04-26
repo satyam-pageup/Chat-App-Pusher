@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, HostListener, OnInit, QueryList, ViewChild, ViewChildren, viewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren, viewChild } from '@angular/core';
 import { IResponseG, GetMessageI } from '../../../response/responseG.response';
 import { ChatBoxI, MessageI, MessageNewI } from '../../../model/chat.model';
 import { GetMessagePaginationI } from '../../../model/pagination.model';
@@ -24,7 +24,7 @@ import { HttpHeaders } from '@angular/common/http';
   templateUrl: './chat-box.component.html',
   styleUrl: './chat-box.component.scss'
 })
-export class ChatBoxComponent extends ComponentBase implements OnInit, AfterViewInit {
+export class ChatBoxComponent extends ComponentBase implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(ConfirmationComponent) ConfirmationComponentObj !: ConfirmationComponent;
   @ViewChild('scrollframe', { static: false }) scrollFrame!: ElementRef;
   @ViewChildren('item') itemElements!: QueryList<any>;
@@ -58,9 +58,6 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
     recieverName: '',
     lastActive: '',
   };
-
-
-
   // for media and document uplaod
   public documentFormControl: FormControl = new FormControl(null);
   public mediaFormControl: FormControl = new FormControl(null);
@@ -91,8 +88,8 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
     super();
     this.isSearchedUserChat = false;
     this.subscribeChannelByName("typing-channel");
-    _utilService.EMarkMessageRead.subscribe(() =>{
-      this.messageList.forEach((message) =>{
+    _utilService.EMarkMessageRead.subscribe(() => {
+      this.messageList.forEach((message) => {
         message.status = 'seen';
       })
     })
@@ -107,9 +104,24 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
       this.isCall = true;
     });
 
-    
-    // if(this.isUserOnline)
-    //   this.isReceiverTyping=false;
+    this._pusherService.onlineUserChannel.bind('online-user-event', (data: { response: string }) => {
+      console.log(data.response);
+
+      const resceivedID: number = parseInt(data.response.split('-')[0]);
+      if (resceivedID == this._utilService.loggedInUserId) {
+        if (data.response == `${this._utilService.loggedInUserId}-offline`) {
+          this._pusherService.onlineUserF(resceivedID, true);
+        }
+      }
+      else if (resceivedID == this._utilService.receiverId) {
+        if (data.response == `${this._utilService.receiverId}-online`) {
+          this.isUserOnline = true;
+        }
+        else if (data.response == `${this._utilService.receiverId}-offline`) {
+          this.isUserOnline = false;
+        }
+      }
+    });
   }
 
   private subscribeChannelByName(channelName: string) {
@@ -236,7 +248,7 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
       this._httpClient.post<IResponseG<MessageI>>(hitUrl, data, {headers: myNewHeader} ).subscribe({
         next: (res) => {
           this._utilService.EUserPresenceCheckInChatList.emit(res.data);
-          this.messageList[index].status = this._utilService.activeUserArray.includes(`${this.recevierId}-${this._utilService.loggedInUserId}-active`)? 'seen' : 'success';
+          this.messageList[index].status = this._utilService.activeUserArray.includes(`${this.recevierId}-${this._utilService.loggedInUserId}-active`) ? 'seen' : 'success';
           this.messageList[index].id = res.data.id;
           this.messageList[index].messageDate = res.data.messageDate;
           this.firebaseService.sendNotification({ receiverSystemToken: this.receiverStystemToken, title: "WhatsApp", body: data.message }, this._utilService.loggedInUserId);
@@ -525,8 +537,15 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
       )
     }
   }
+  @HostListener('window:beforeunload', ['$event'])
+  onBeforeUnload(event: Event) {
+    // Call your API method here
+    // this.yourApiCall();
+    this._pusherService.onlineUserF(this._utilService.loggedInUserId, false);
+  }
 
   ngOnDestroy(): void {
+    this._pusherService.onlineUserF(this._utilService.loggedInUserId, false);
     if (this.typingSubscription) {
       this.typingSubscription.unsubscribe();
     }
