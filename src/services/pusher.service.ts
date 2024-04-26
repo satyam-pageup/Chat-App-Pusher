@@ -31,7 +31,6 @@ export class PusherService extends ComponentBase{
   public updateUserStatus(status: boolean){
     this.postAPICallPromise<null, IResponseG<null>>(APIRoutes.updateUserStatus(this._utilService.receiverId, status), null, this.headerOption).then(
       (res) =>{
-        this._toastreService.success(res.message);
       }
     )
   }
@@ -39,9 +38,6 @@ export class PusherService extends ComponentBase{
   public onlineUserF(id: number){
     this.postAPICallPromise<null, IResponseG<null>>(APIRoutes.triggerUserOnline, null, this.headerOption).then(
       (res) =>{
-        this._toastreService.success(res.message);
-        console.log(res);
-        
       }
     )
   }

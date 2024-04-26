@@ -397,8 +397,6 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
       this.Name = res.name;
 
       this.isUserOnline = this._utilService.onlineUserArray.includes(this.recevierId);
-      console.log(this._utilService.onlineUserArray);
-      
 
       this.postAPICallPromise<GetMessagePaginationI, GetMessageI<MessageI[]>>(APIRoutes.getMessageById(res.id, false), this.options, this.headerOption).then(
         (res) => {

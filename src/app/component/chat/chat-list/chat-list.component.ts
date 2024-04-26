@@ -96,7 +96,7 @@ export class ChatListComponent extends ComponentBase implements OnInit, OnDestro
           if (msg.newMessages > 0) newMessage++;
         }
       )
-      this._titleService.setTitle(`(${newMessage})QuickChat`);
+      this._titleService.setTitle((newMessage>0)?`(${newMessage})QuickChat`: `QuickChat`);
     })
   }
 
@@ -151,6 +151,8 @@ export class ChatListComponent extends ComponentBase implements OnInit, OnDestro
       id,
       name
     }
+
+    this.tabNotificationCount$.next();
     this._utilService.isUserChatAlreadyExists = true;
     this._utilService.EUserChat.emit(userChat);
   }
