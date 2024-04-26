@@ -109,7 +109,10 @@ export class ChatListComponent extends ComponentBase implements OnInit, OnDestro
         // this._pusherService.onlineUserF(res.data.id);
 
         this._utilService.EShowUser.emit(true);
+
+        this.headerOption.isSilentCall = false;
         this.getChatList();
+        this.headerOption.isSilentCall = true;
       }
     )
 

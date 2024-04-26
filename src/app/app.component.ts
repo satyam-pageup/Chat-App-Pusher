@@ -33,22 +33,9 @@ export class AppComponent extends ComponentBase implements OnInit {
     private _route: Router,
     private _pusherService: PusherService,
     private _tokenDecodeService: TokenDecodeService,
-    private _titleService: Title,
-    private _loaderService: LoaderService
+    private _titleService: Title
   ) {
     super();
-
-    this._loaderService.showLoader$.subscribe(
-      ()=>{
-        if(_loaderService.apiCnt > 0){
-          this.isShowLoader = true;
-        }
-        
-        if(_loaderService.apiCnt == 0){
-          this.isShowLoader = false;
-        }
-      }
-    )
 
     // redirecting to login, if token is not present
     if(!localStorage.getItem("jwtToken")){
