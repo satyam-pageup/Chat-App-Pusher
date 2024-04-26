@@ -106,9 +106,8 @@ export class ChatListComponent extends ComponentBase implements OnInit, OnDestro
         this._utilService.loggedInUserId = res.data.id;
         this._utilService.loggedInUserName = res.data.name;
         this._pusherService.onlineUserF(res.data.id);
-        // for creating channel
-        // this.getAllUser();
 
+        this._utilService.EShowUser.emit(true);
         this.getChatList();
       }
     )

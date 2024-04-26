@@ -11,6 +11,7 @@ import { Channel } from 'pusher-js';
 import { TokenDecodeService } from '../services/token-decode.service';
 import { IUserStatus } from './model/util.model';
 import { Title } from '@angular/platform-browser';
+import { LoaderService } from '../services/loader.service';
 
 @Component({
   selector: 'app-root',
@@ -23,6 +24,7 @@ export class AppComponent extends ComponentBase implements OnInit {
   public userDetail!: UserI;
   public username: string = '';
   public showChatMessages: boolean = false;
+  public isShowLoader: boolean = false;
   private channel!: Channel;
   private activeUserChannel!: Channel;
   private onlineUsersChannel!: Channel;
@@ -32,9 +34,37 @@ export class AppComponent extends ComponentBase implements OnInit {
     private _route: Router,
     private _pusherService: PusherService,
     private _tokenDecodeService: TokenDecodeService,
-    private _titleService: Title
+    private _titleService: Title,
+    private _loaderService: LoaderService
   ) {
     super();
+
+    _loaderService.showLoader$.subscribe(
+      ()=>{
+        if(_loaderService.apiCnt > 0){
+          this.isShowLoader = true;
+        }
+        
+        if(_loaderService.apiCnt == 0){
+          this.isShowLoader = false;
+        }
+      }
+    )
+
+    // redirecting to login, if token is not present
+    if(!localStorage.getItem("jwtToken")){
+      this._toastreService.info('Token removed! Please login again');
+      this._router.navigate(['/']);
+    }
+    else{
+      // token exists => checking validity of token
+      const data = _tokenDecodeService.getDecodedAccessToken(localStorage.getItem("jwtToken") as string);
+      if(data){
+        this._router.navigate(['/chat']);
+        this.showChatMessages = true;
+      }
+    }
+
     this.firebaseService.requestPermission();
     this.firebaseService.listen();
     this._utilService.EShowUser.subscribe(
@@ -59,18 +89,6 @@ export class AppComponent extends ComponentBase implements OnInit {
         this._pusherService.updateUserStatus(!document.hidden);
       }
     })
-
-    if (localStorage.getItem("jwtToken")) {
-      let isTokenExist = this._tokenDecodeService.getDecodedAccessToken(localStorage.getItem("jwtToken")!);
-      if (!isTokenExist) {
-        this.showChatMessages = true;
-        this._route.navigate(['/chat']);
-
-      }
-      else {
-        this._route.navigate(['/login']);
-      }
-    }
   }
 
 
@@ -110,24 +128,16 @@ export class AppComponent extends ComponentBase implements OnInit {
         this._utilService.activeUserArray.push(data.triggeredId);
       }
     });
-    console.log(this._utilService.activeUserArray);
-
   }
 
   private subscribeUserChannel() {
     this.onlineUsersChannel = this._pusherService.subscribeToChannel("online-user-channel");
     this.onlineUsersChannel.bind('online-user-event', (data: {userId:number}) => {
-      // this._pusherService.messageReceivedE.emit(data);
       if (data.userId != this._utilService.loggedInUserId){
-        console.log(data.userId);
         if(!this._utilService.onlineUserArray.includes(data.userId)){
           this._utilService.onlineUserArray.push(data.userId);
         }
       }
-      console.log("data",data);
-      console.log(this._utilService.onlineUserArray);
-      
-      
     });
   }
 }

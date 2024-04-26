@@ -22,13 +22,13 @@ export class FirebaseService extends ComponentBase {
       { vapidKey: environment.firebase.vapidKey }).then(
         (currentToken) => {
           if (currentToken) {
-            this._toastreService.success('Hurraaa!!! we got the token.....');
+            // this._toastreService.success('Hurraaa!!! we got the token.....');
           } else {
             this._toastreService.error('No registration token available. Request permission to generate one.')
           }
         }).catch((err) => {
 
-          this._toastreService.error('Error retrieving token. ', err);
+          // this._toastreService.error('Error retrieving token. ', err);
           if (err.code === 'messaging/permission-blocked') {
             console.log('Notification access denied by the user.');
           }

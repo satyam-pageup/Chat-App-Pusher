@@ -2,12 +2,10 @@ import { EventEmitter, Injectable } from '@angular/core';
 import Pusher from 'pusher-js';
 import { environment } from '../environments/environment';
 import { MessageI } from '../app/model/chat.model';
-import { HttpClient } from '@angular/common/http';
 import { ComponentBase } from '../app/shared/class/ComponentBase.class';
 import { APIRoutes } from '../app/shared/constants/apiRoutes.constant';
 import { IResponseG } from '../app/response/responseG.response';
 import { UtilService } from './util.service';
-// import {} from "pusher"
 
 @Injectable({
   providedIn: 'root'

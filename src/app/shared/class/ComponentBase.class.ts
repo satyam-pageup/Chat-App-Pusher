@@ -12,7 +12,7 @@ export class ComponentBase {
     public isBtnLoaderActive: boolean = false;
 
     public headerOption: HeaderOption = {
-        issilentCall: false,
+        isSilentCall: false,
         isSendNotification: false
     }
 
@@ -30,7 +30,8 @@ export class ComponentBase {
 
         if (hOption.isSendNotification) {
             this.myHeader = new HttpHeaders({
-                isSendNotification: 'true'
+                isSendNotification: 'true',
+                isSilentCall: 'true'
             })
         }
 
@@ -55,6 +56,11 @@ export class ComponentBase {
     }
 
     public postAPICallPromise<D, R>(url: string, data: D, hOption: HeaderOption): Promise<R> {
+
+        this.myHeader = new HttpHeaders({
+            isSendNotification: 'true',
+            isSilentCall: 'true'
+        })
 
         let hitUrl: string = `${this.baseUrl}${url}`;
 

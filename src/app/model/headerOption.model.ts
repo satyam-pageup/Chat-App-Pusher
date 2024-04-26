@@ -1,4 +1,4 @@
 export interface HeaderOption{
-    issilentCall: boolean;
+    isSilentCall: boolean;
     isSendNotification: boolean;
 }

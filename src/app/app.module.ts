@@ -26,6 +26,8 @@ import { PusherService } from '../services/pusher.service';
 import { PusherMessageService } from '../services/pusher-message.service';
 import { DatePipe } from '@angular/common';
 import { LongPressDirective } from './shared/directives/long-press.directive';
+import { LoaderComponent } from './shared/component/loader/loader.component';
+import { loaderInterceptor } from './interceptor/loader.interceptor';
 
 initializeApp(environment.firebase);
 @NgModule({
@@ -42,6 +44,7 @@ initializeApp(environment.firebase);
     TimeAgoPipe,
     ChatlistTimeAgoPipe,
     LongPressDirective,
+    LoaderComponent,
   ],
   imports: [
     BrowserModule,
@@ -56,6 +59,7 @@ initializeApp(environment.firebase);
     ModalModule.forRoot()
   ],
   providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: loaderInterceptor, multi:true },
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     PusherService, PusherMessageService,
     DatePipe

@@ -8,6 +8,7 @@ import { APPRoutes } from '../../shared/constants/appRoutes.contant';
 import { APIRoutes } from '../../shared/constants/apiRoutes.constant';
 import { ResponseDataI } from '../../response/responseG.response';
 import { UserI } from '../../response/user.response';
+import { TokenDecodeService } from '../../../services/token-decode.service';
 
 @Component({
   selector: 'app-login',
@@ -16,8 +17,16 @@ import { UserI } from '../../response/user.response';
 })
 export class LoginComponent extends ComponentBase {
 
-  constructor(private firebaseService: FirebaseService, private _utilService: UtilService) {
+  constructor(private _utilService: UtilService, private _tokenDecodeService: TokenDecodeService) {
     super();
+    if (localStorage.getItem("jwtToken")) {
+      // token exists => checking validity of token
+      const data = _tokenDecodeService.getDecodedAccessToken(localStorage.getItem("jwtToken") as string);
+      if (!data) {
+        this._router.navigate(['/chat']);
+      }
+    }
+
   }
 
   public loginForm: FormGroup<LoginModelI> = new FormGroup<LoginModelI>({
@@ -29,6 +38,7 @@ export class LoginComponent extends ComponentBase {
   public login() {
     this.loginForm.markAllAsTouched();
 
+    this.isBtnLoaderActive = true;
     if (this.loginForm.valid) {
       const loginData: LoginDataI = this.loginForm.value as LoginDataI;
 
