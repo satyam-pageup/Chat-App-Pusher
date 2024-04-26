@@ -5,6 +5,7 @@ import { IGetAllUser, UserI } from '../app/response/user.response';
 import { ComponentBase } from '../app/shared/class/ComponentBase.class';
 import { IResponseG, ResponseIterableI } from '../app/response/responseG.response';
 import { APIRoutes } from '../app/shared/constants/apiRoutes.constant';
+import { HttpHeaders } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -32,7 +33,11 @@ export class UtilService extends ComponentBase {
   }
 
   public search(payload: any) {
-    return this._httpClient.post<ResponseIterableI<IGetAllUser[]>>(`${this.baseUrl}${APIRoutes.getAllEmployee}`, payload);
+    let myNewHeader: HttpHeaders = new HttpHeaders({
+      isSendNotification: 'true',
+      isSilentCall: 'true'
+  })
+    return this._httpClient.post<ResponseIterableI<IGetAllUser[]>>(`${this.baseUrl}${APIRoutes.getAllEmployee}`, payload, { headers: myNewHeader });
   }
 
 }
