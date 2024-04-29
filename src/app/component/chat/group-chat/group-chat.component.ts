@@ -5,6 +5,7 @@ import { ComponentBase } from '../../../shared/class/ComponentBase.class';
 import { IEmplyeeOptions } from '../../../model/option.model';
 import { ResponseIterableI } from '../../../response/responseG.response';
 import { APIRoutes } from '../../../shared/constants/apiRoutes.constant';
+import { Subject, debounceTime } from 'rxjs';
 
 @Component({
   selector: 'app-group-chat',
@@ -30,15 +31,17 @@ export class GroupChatComponent extends ComponentBase implements OnInit {
   modalRef?: BsModalRef;
   resolve: any;
 
+  public userSearchSubject: Subject<string> = new Subject<string>();
+  private onDestroy$: Subject<void> = new Subject<void>();
+
   constructor(private modalService: BsModalService) {
     super();
   }
 
   ngOnInit(): void {
     // this.getAllUsers();
+    
   }
-
-
 
   private getAllUsers() {
     this.postAPICallPromise<IEmplyeeOptions, ResponseIterableI<IGetAllUser[]>>(APIRoutes.getAllEmployee, this.options, this.headerOption).then(
@@ -47,11 +50,10 @@ export class GroupChatComponent extends ComponentBase implements OnInit {
           const object: IGroupChat = { ...chat, isSelected: false }
           this.allUserList.push(object);
         })
+        this.searchedUserList=this.allUserList;
       }
     )
   }
-
-
 
   public confirm() {
     this.modalRef?.hide();
@@ -67,27 +69,31 @@ export class GroupChatComponent extends ComponentBase implements OnInit {
     this.allUserList = [];
     this.selectedUserList = [];
     this.modalRef = this.modalService.show(this.modalTemplate, { class: 'modal-lg' });
-
     this.getAllUsers();
-
     return new Promise<boolean>((resolve) => {
       this.resolve = resolve;
     })
-
   }
 
   public onTyping() {
     console.log(this.searchedWord);
+    // this.searchedUserLis
+    if(this.searchedWord==""){
+      this.searchedUserList=this.allUserList;
+      return;
+    }
+    this.searchedUserList = this.searchedUserList.filter((user)=>user.employeeName.toLowerCase().includes(this.searchedWord.toLowerCase()))
   }
 
   public selectUser(index: number){
     this.selectedUserList.push(this.allUserList[index]);
-    this.allUserList.splice(index, 1);
+    this.searchedUserList.splice(index, 1);
   }
 
   public unSelectUser(index: number){
-    this.allUserList.push(this.selectedUserList[index]);
+    this.searchedUserList.push(this.selectedUserList[index]);
     this.selectedUserList.splice(index, 1);
   }
+
 
 }

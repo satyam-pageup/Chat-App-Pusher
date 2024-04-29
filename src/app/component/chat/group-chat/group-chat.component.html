@@ -4,13 +4,12 @@
     </div>
     <div class="modal-body">
         <div class="row">
-            <div class="col-md-6 d-flex justify-content-center align-items-center">
-                <label>Group Name</label>
-                <input type="text">
+            <div class="col-md-6 px-5">
+                <input type="text" placeholder="Enter group name" class="input-box">
             </div>
-            <div class="col-md-6 d-flex justify-content-center align-items-center">
+            <div class="col-md-6 px-5">
                 <div>
-                    <input type="text" placeholder="searching.." class="input-box">
+                    <input type="text" placeholder="searching.." class="input-box" [(ngModel)]="searchedWord" (input)="onTyping()" >
                 </div>
             </div>
 
@@ -22,8 +21,8 @@
                     <div class="user-list-box">
                         <div *ngFor="let selectedUser of selectedUserList; let i=index">
                             <div (click)="unSelectUser(i)"
-                                class="user-list">
-                                {{ selectedUser.employeeName}}
+                                class="sel-user-list d-flex justify-content-between px-3">
+                                {{ selectedUser.employeeName}} <span style="color: red;">x</span>
                             </div>
                         </div>
                     </div>
@@ -33,9 +32,9 @@
                 <div>
                     <h2>User List</h2>
                     <div class="user-list-box">
-                        <div *ngFor="let user of allUserList; let i=index">
-                            <div (click)="selectUser(i)" class="user-list">
-                                {{ user.employeeName }}
+                        <div *ngFor="let user of searchedUserList; let i=index">
+                            <div (click)="selectUser(i)" class="user-list  px-3">
+                                {{ user.employeeName }} 
                             </div>
                         </div>
                     </div>

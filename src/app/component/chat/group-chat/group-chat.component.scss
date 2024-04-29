@@ -23,6 +23,12 @@
     border-radius: 5px;
     cursor: pointer;
 }
+
+.user-list:hover{
+    background-color: aliceblue;
+
+}
+
 .sel-user-list {
     border: 0.3px solid;
     padding: 5px;
@@ -31,4 +37,10 @@
     border-radius: 5px;
     cursor: pointer;
     background-color: aliceblue;
+}
+
+.sel-user-list:hover{
+    background-color: #fff;
+
+    
 }
