@@ -148,7 +148,13 @@ export class ChatListComponent extends ComponentBase implements OnInit, OnDestro
 
 
   public createGroup(){
-    this.groupChatComponentObj.openModal();
+    this.groupChatComponentObj.openModal().then(
+      (res) =>{
+        if(res){
+          this.getChatList();
+        }
+      }
+    )
   }
 
   public getChats(id: number, name: string, chat: ChatBoxI) {

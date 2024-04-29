@@ -45,12 +45,12 @@ export class GroupChatComponent extends ComponentBase implements OnInit {
     this.postAPICallPromise<IEmplyeeOptions, ResponseIterableI<IGetAllUser[]>>(APIRoutes.getAllEmployee, this.options, this.headerOption).then(
       (res) => {
         res.iterableData.map((chat) => {
-          if(chat.id!=this._utilService.loggedInUserId){
+          if (chat.id != this._utilService.loggedInUserId) {
             const object: IGroupChat = { ...chat, isSelected: false }
             this.allUserList.push(object);
           }
         })
-        this.searchedUserList=this.allUserList;
+        this.searchedUserList = this.allUserList;
       }
     )
   }
@@ -88,6 +88,7 @@ export class GroupChatComponent extends ComponentBase implements OnInit {
           (res) => {
             this._toastreService.success(res.message);
             this.modalRef?.hide();
+            this.resolve(true);
           }
         )
       }
@@ -112,18 +113,18 @@ export class GroupChatComponent extends ComponentBase implements OnInit {
   public onTyping() {
     console.log(this.searchedWord);
     // this.searchedUserLis
-    if(this.searchedWord==""){
+    if (this.searchedWord == "") {
       // this.searchedUserList=this.allUserList;
       this.allUserList.map(
-        (allUser)=>{
-          if(!this.selectedUserList.includes(allUser)){
+        (allUser) => {
+          if (!this.selectedUserList.includes(allUser)) {
             this.searchedUserList.push(allUser);
           }
         }
       )
       return;
     }
-    this.searchedUserList = this.searchedUserList.filter((user)=>user.employeeName.toLowerCase().includes(this.searchedWord.toLowerCase()))
+    this.searchedUserList = this.searchedUserList.filter((user) => user.employeeName.toLowerCase().includes(this.searchedWord.toLowerCase()))
   }
 
   public selectUser(index: number) {
