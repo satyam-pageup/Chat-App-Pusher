@@ -155,18 +155,18 @@ export class ChatListComponent extends ComponentBase implements OnInit, OnDestro
     this._utilService.isGroup = chat.isGroup;
     this._utilService.receiverId = id;
     chat.newMessages = 0;
+    this._pusherService.updateUserStatus(!chat.isGroup);
     const getClickedChat: { id: number, name: string } = {
       id,
       name
     }
 
+
     if(chat.isGroup){
-      this._utilService.EGroupChat.emit(getClickedChat)
+      this._utilService.EUserChat.emit(getClickedChat);
     }
     else{
-      this._pusherService.updateUserStatus(true);
       this._pusherService.onlineUserF(id,false);
-  
       this.tabNotificationCount$.next();
       this._utilService.isUserChatAlreadyExists = true;
       this._utilService.EUserChat.emit(getClickedChat);
@@ -175,7 +175,6 @@ export class ChatListComponent extends ComponentBase implements OnInit, OnDestro
 
   public deleteConversationById(event: MouseEvent, receiverId: number) {
     event.stopPropagation();
-
     this.ConfirmationComponentObj.openModal("Delete Chat", "Do you want to delete it permanently ?").then(
       (res: boolean) => {
         if (res) {

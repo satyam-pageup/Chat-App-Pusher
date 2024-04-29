@@ -18,6 +18,7 @@ import { Channel } from 'pusher-js';
 import { debounceTime } from 'rxjs/operators';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { HttpHeaders } from '@angular/common/http';
+import { HeaderOption } from '../../../model/headerOption.model';
 
 @Component({
   selector: 'app-chat-box',
@@ -230,8 +231,9 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
     this.isScrollToBottom = true;
     this.isSendMsg = true;
     if (this.message.trim().length > 0) {
-      const data: { message: string } = {
-        message: this.message.trim()
+      const data: { message: string, isGroup: boolean } = {
+        message: this.message.trim(),
+        isGroup: this._utilService.isGroup
       }
       const rMsg: IGetMessage = {
         id: -1,
@@ -422,7 +424,7 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
 
       this.isUserOnline = this._utilService.onlineUserArray.includes(this.recevierId);
 
-      this.postAPICallPromise<GetMessagePaginationI, GetMessageI<IGetMessage[]>>(APIRoutes.getMessageById(res.id, false), this.options, this.headerOption).then(
+      this.postAPICallPromise<GetMessagePaginationI, GetMessageI<IGetMessage[]>>(APIRoutes.getMessageById(res.id, this._utilService.isGroup), this.options, this.headerOption).then(
         (res) => {
           this.showChatMessages = true;
           this.messageList = res.data.data;
@@ -438,18 +440,6 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
         }
       )
     })
-
-
-    this._utilService.EGroupChat.subscribe(
-      (res) =>{
-        const payLoad: { message: string, isGroup: boolean } = {
-          message: "",
-          isGroup: true
-        }
-
-        this.postAPICallPromise
-      }
-    )
   }
 
   private getChatById() {

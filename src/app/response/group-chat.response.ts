@@ -18,16 +18,21 @@ export interface IGroupChatResponse{
     departmentName: string;
 }
 
-// export interface IGroupChat{
-//     id: number;
-//     groupName: string;
-//     employeeIds: Array<number>;
-//     admins: Array<number>;
-// }
 
 export class CGroupChat{
     id: number = -1;
     groupName: string = '';
     employeeIds: Array<number> = [];
     admins: Array<number> = [];
+}
+export class IGroupChat{
+    id: number = -1;
+    groupName: string = '';
+    employeeIds: Array<number> = [];
+    admins: Array<number> = [];
+}
+
+export interface IGroupChatR<CG, ID>{
+    chatGroup: CG;
+    iterableData: ID;
 }

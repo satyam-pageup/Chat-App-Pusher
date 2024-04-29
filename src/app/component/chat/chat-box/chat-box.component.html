@@ -1,13 +1,20 @@
 <div class="chat-container" [ngStyle]="{'display' : (!isChatLoaderActive && !isFirstTime)? 'block' :'none'}">
     <ng-container>
         <div class="row mx-0 header">
-            <div class="col-11 name-section">
+            <div class="col-11 name-section d-flex">
+                <div class="d-flex align-items-center">
+                    <i *ngIf="!_utilService.isGroup" style="font-size: 35px; margin-right: 10px;" class='bx bx-user-circle text-primary'></i>
+                    <i *ngIf="_utilService.isGroup" style="font-size: 35px; margin-right: 10px;" class='bx bx-group text-primary'></i>
+
+                </div>
                 <div>
                     <h5>{{Name}}</h5>
+                    @if (!_utilService.isGroup) {
                     <small *ngIf="isUserOnline">Online</small>
                     <small *ngIf="!isUserOnline">offline</small>
+                    }
                 </div>
-                <p *ngIf="isReceiverTyping">typing...</p>
+                <p *ngIf="isReceiverTyping && !_utilService.isGroup">typing...</p>
             </div>
             <div class="col-1 option-bar">
                 <div class="btn-group dropup">
