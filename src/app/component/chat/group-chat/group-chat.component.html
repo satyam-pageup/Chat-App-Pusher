@@ -3,8 +3,38 @@
         <h5 class="modal-title">Create Group</h5>
         <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
     </div>
-    <div class="modal-body">
-        <p>messageC </p>
+    <div class="modal-body row">
+        <div class="col-md-6 d-flex justify-content-center align-items-center">
+            <label>Group Name</label>
+            <input type="text">
+        </div>
+        <div class="col-md-6 d-flex justify-content-center align-items-center">
+            <div>
+                <input type="text" placeholder="searching.." class="input-box">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 d-flex justify-content-center align-items-center">
+                <div>
+                    <h2>Selected Users</h2>
+                    <div *ngFor="let selectedUser of allUserList">
+                        <div *ngIf="selectedUser.isSelected" (click)="selectedUser.isSelected=false">
+                            {{ selectedUser.employeeName}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 d-flex justify-content-center align-items-center">
+                <div>
+                    <h2>User List</h2>
+                    <div *ngFor="let user of allUserList">
+                        <div *ngIf="!user.isSelected" (click)="user.isSelected=true">
+                            {{ user.employeeName }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="decline()">Cancel</button>

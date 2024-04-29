@@ -24,6 +24,17 @@ export interface IGetAllUser{
     id: number;
     phone: string;
 }
+export interface IGroupChat{
+    city: string;
+    country: string;
+    departmentName: string;
+    email: string;
+    employeeName: string;
+    employeeType: string;
+    id: number;
+    phone: string;
+    isSelected:boolean;
+}
 export class CGetAllUser{
     city: string = '';
     country: string = '';
