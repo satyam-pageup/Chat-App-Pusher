@@ -8,6 +8,7 @@ export interface ChatBoxI {
     recieverId: number;
     recieverName: string;
     lastActive: string;
+    isGroup: boolean;
 }
 export class ChatBoxC {
     employeeId: number = 0;

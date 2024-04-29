@@ -57,6 +57,7 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
     recieverId: 0,
     recieverName: '',
     lastActive: '',
+    isGroup: false
   };
   // for media and document uplaod
   public documentFormControl: FormControl = new FormControl(null);
