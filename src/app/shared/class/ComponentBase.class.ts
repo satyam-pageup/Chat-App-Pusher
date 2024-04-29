@@ -10,6 +10,7 @@ export class ComponentBase {
 
     public baseUrl: string = environment.baseUrl;
     public isBtnLoaderActive: boolean = false;
+    public isChatLoaderActive: boolean = false;
 
     public headerOption: HeaderOption = {
         isSilentCall: false,
@@ -66,9 +67,11 @@ export class ComponentBase {
                 next: (res) => {
                     resolve(res);
                     this.isBtnLoaderActive = false;
+                    this.isChatLoaderActive = false;
                 },
 
                 error: (err) => {
+                    this.isChatLoaderActive = false;
                     this.isBtnLoaderActive = false;
                     console.log(err);
                     reject(err);

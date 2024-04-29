@@ -44,7 +44,7 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
     take: 20,
     search: ""
   }
-  // public messageList: MessageI[] = [];
+  public isFirstTime: boolean = true;
   public messageList: IGetMessage[] = [];
   public recevierId: number = -1;
   public message: string = '';
@@ -87,6 +87,7 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
   constructor(public _utilService: UtilService, private firebaseService: FirebaseService,
     private elementRef: ElementRef, private _pusherService: PusherService, private _datePipe: DatePipe) {
     super();
+    this.isFirstTime = true;
     this.isSearchedUserChat = false;
     this.subscribeChannelByName("typing-channel");
     _utilService.EMarkMessageRead.subscribe(() => {
@@ -410,6 +411,9 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
 
   private userChatEmitterSubcribedF() {
     this._utilService.EUserChat.subscribe((res) => {
+      this.isFirstTime = false;
+      this.showChatMessages = false;
+      this.isChatLoaderActive = true;
       this.message = "";
       this.recevierId = res.id;
       this._utilService.currentOpenedChat = res.id;
@@ -422,7 +426,6 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
         (res) => {
           this.showChatMessages = true;
           this.messageList = res.data.data;
-
           this.receiverStystemToken = res.data.systemToken;
           this.isScrollToBottom = true;
           if (res.data.isBlockedUser) {
@@ -431,9 +434,22 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
           else {
             this.userBlockState = "Block"
           }
+          this.showChatMessages = true;
         }
       )
     })
+
+
+    this._utilService.EGroupChat.subscribe(
+      (res) =>{
+        const payLoad: { message: string, isGroup: boolean } = {
+          message: "",
+          isGroup: true
+        }
+
+        this.postAPICallPromise
+      }
+    )
   }
 
   private getChatById() {

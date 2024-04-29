@@ -1,13 +1,11 @@
-<div class="chat-container" [ngStyle]="{'display' : showChatMessages? 'block' :'none'}">
+<div class="chat-container" [ngStyle]="{'display' : (!isChatLoaderActive && !isFirstTime)? 'block' :'none'}">
     <ng-container>
         <div class="row mx-0 header">
             <div class="col-11 name-section">
                 <div>
-                    <!-- <ng-container> -->
                     <h5>{{Name}}</h5>
                     <small *ngIf="isUserOnline">Online</small>
                     <small *ngIf="!isUserOnline">offline</small>
-                    <!-- </ng-container> -->
                 </div>
                 <p *ngIf="isReceiverTyping">typing...</p>
             </div>
@@ -50,38 +48,22 @@
                             {{chats.message}}
                             <i (click)="deleteMessage(chats.id, i)" class='bx bxs-trash c-p-s'
                                 style="color: black;"></i>
-                            <!-- <span>
-                                {{ chats.messageDate| utcToIndianTime }}
-                                <i *ngIf="chats.status == 'sending'"
-                                    style="color: black;font-size: 15px;  font-weight: bold;"
-                                    class='bx bx-radio-circle'></i>
-                                <i *ngIf="chats.status == 'failed'"
-                                    style="color: red;font-size: 15px; font-weight: bold;" class='bx bx-x-circle'></i>
-                                <i *ngIf="chats.status == 'success'"
-                                    style="color: rgb(51, 51, 51); font-size: 15px;  font-weight: bold;"
-                                    class='bx bx-check'></i>
-                                <i *ngIf="chats.status == 'seen' "
-                                    style="color: blue; font-size: 15px; font-weight: bold;"
-                                    class='bx bx-check-double'></i>
-                            </span> -->
                             <span>
-                                {{ chats.messageDate| utcToIndianTime }}, {{chats.status}}
-                                <i *ngIf="chats.status == 1"
-                                    style="color: black;font-size: 15px;  font-weight: bold;"
+                                {{ chats.messageDate| utcToIndianTime }}
+                                <i *ngIf="chats.status == 1" style="color: black;font-size: 15px;  font-weight: bold;"
                                     class='bx bx-radio-circle'></i>
-                                    <i *ngIf="chats.status == 2"
+                                <i *ngIf="chats.status == 2"
                                     style="color: rgb(51, 51, 51); font-size: 15px;  font-weight: bold;"
                                     class='bx bx-check'></i>
-                                    
-                                    <i *ngIf="chats.status == 3"
+
+                                <i *ngIf="chats.status == 3"
                                     style="color: rgb(51, 51, 51); font-size: 15px;  font-weight: bold;"
                                     class='bx bx-check-double'></i>
-                                    
-                                    <i *ngIf="chats.status == 4"
-                                    style="color: blue; font-size: 15px; font-weight: bold;"
+
+                                <i *ngIf="chats.status == 4" style="color: blue; font-size: 15px; font-weight: bold;"
                                     class='bx bx-check-double'></i>
-                                    <i *ngIf="chats.status == 5"
-                                        style="color: red;font-size: 15px; font-weight: bold;" class='bx bx-x-circle'></i>
+                                <i *ngIf="chats.status == 5" style="color: red;font-size: 15px; font-weight: bold;"
+                                    class='bx bx-x-circle'></i>
                             </span>
                         </p>
                     </div>
@@ -89,6 +71,7 @@
             </div>
 
         </div>
+
         <div class="row mx-0 footer">
             <div *ngIf="userBlockState=='Block'" class="row-mx-0" style="width: 100%; margin: auto;">
                 @if (mediaBase64Array.length > 0) {
@@ -141,11 +124,15 @@
 
         </div>
     </ng-container>
-
 </div>
 
+<div *ngIf="isChatLoaderActive" class="row"
+    style="height: 100%; width: 100%; justify-content: center; align-items: center;">
+    <div class="spinner-border" role="status">
+    </div>
+</div>
 
-<div class="chat-container" [ngStyle]="{'display' : showChatMessages? 'none' :'block'}">
+<div *ngIf="isFirstTime" class="chat-container" [ngStyle]="{'display' : showChatMessages? 'none' :'block'}">
     <div class="container d-flex justify-content-center align-items-center">
         <img src="../../../../assets/chat-1873536_1280-removebg-preview.png" alt="">
     </div>

@@ -15,6 +15,7 @@ export class UtilService extends ComponentBase {
   public EChatClicked: EventEmitter<number> = new EventEmitter<number>();
   public EShowUser: EventEmitter<boolean> = new EventEmitter<boolean>();
   public EUserChat: EventEmitter<{ id: number, name: string }> = new EventEmitter<{ id: number, name: string }>();
+  public EGroupChat: EventEmitter<{ id: number, name: string }> = new EventEmitter<{ id: number, name: string }>();
   public EUserPresenceCheckInChatList: EventEmitter<IGetMessage> = new EventEmitter<IGetMessage>();
   public EUpdateChatList: EventEmitter<IUpdateChatList> = new EventEmitter<IUpdateChatList>();
   public EMarkMessageRead: EventEmitter<null> = new EventEmitter<null>();
@@ -26,6 +27,7 @@ export class UtilService extends ComponentBase {
   public currentOpenedChat: number = -1;
   public activeUserArray: string[] = [];
   public onlineUserArray: number[] = [];
+  public isGroup: boolean = false;
 
 
   public getLoggedInUserDetialsF() {

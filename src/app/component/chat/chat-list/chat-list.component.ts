@@ -152,18 +152,25 @@ export class ChatListComponent extends ComponentBase implements OnInit, OnDestro
   }
 
   public getChats(id: number, name: string, chat: ChatBoxI) {
+    this._utilService.isGroup = chat.isGroup;
     this._utilService.receiverId = id;
-    this._pusherService.updateUserStatus(true);
-    this._pusherService.onlineUserF(id,false);
     chat.newMessages = 0;
-    const userChat: { id: number, name: string } = {
+    const getClickedChat: { id: number, name: string } = {
       id,
       name
     }
 
-    this.tabNotificationCount$.next();
-    this._utilService.isUserChatAlreadyExists = true;
-    this._utilService.EUserChat.emit(userChat);
+    if(chat.isGroup){
+      this._utilService.EGroupChat.emit(getClickedChat)
+    }
+    else{
+      this._pusherService.updateUserStatus(true);
+      this._pusherService.onlineUserF(id,false);
+  
+      this.tabNotificationCount$.next();
+      this._utilService.isUserChatAlreadyExists = true;
+      this._utilService.EUserChat.emit(getClickedChat);
+    }
   }
 
   public deleteConversationById(event: MouseEvent, receiverId: number) {
