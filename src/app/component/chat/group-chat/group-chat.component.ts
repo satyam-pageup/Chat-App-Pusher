@@ -3,8 +3,11 @@ import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { IGetAllUser, IGroupChat } from '../../../response/user.response';
 import { ComponentBase } from '../../../shared/class/ComponentBase.class';
 import { IEmplyeeOptions } from '../../../model/option.model';
-import { ResponseIterableI } from '../../../response/responseG.response';
+import { IResponseG, ResponseIterableI } from '../../../response/responseG.response';
 import { APIRoutes } from '../../../shared/constants/apiRoutes.constant';
+import { UtilService } from '../../../../services/util.service';
+import { FormControl, Validators } from '@angular/forms';
+import { ICreateGroup } from '../../../model/group-chat.model';
 
 @Component({
   selector: 'app-group-chat',
@@ -25,12 +28,13 @@ export class GroupChatComponent extends ComponentBase implements OnInit {
   public allUserList: IGroupChat[] = [];
   public searchedUserList: IGroupChat[] = [];
   public selectedUserList: IGroupChat[] = [];
+  public groupName: FormControl<string | null> = new FormControl('', Validators.required);
   public searchedWord: string = '';
 
   modalRef?: BsModalRef;
   resolve: any;
 
-  constructor(private modalService: BsModalService) {
+  constructor(private modalService: BsModalService, private _utilService: UtilService) {
     super();
   }
 
@@ -53,9 +57,40 @@ export class GroupChatComponent extends ComponentBase implements OnInit {
 
 
 
-  public confirm() {
-    this.modalRef?.hide();
-    this.resolve(true);
+  public createGroup() {
+
+    this.groupName.markAsTouched();
+    if (this.selectedUserList.length == 0) {
+      this._toastreService.info("Please select atleast one user");
+    }
+    else
+      if (this.groupName.valid) {
+        let employeeIds: Array<number> = [];
+        let admins: Array<number> = [];
+
+        this.selectedUserList.forEach(
+          (selUser) => {
+            employeeIds.push(selUser.id);
+          }
+        );
+
+        employeeIds.push(this._utilService.loggedInUserId);
+
+        admins.push(this._utilService.loggedInUserId);
+
+        const newGroup: ICreateGroup = {
+          groupName: (this.groupName.value as string).trim(),
+          employeeIds: employeeIds,
+          admins: admins
+        }
+
+        this.postAPICallPromise<ICreateGroup, IResponseG<null>>(APIRoutes.createGroup, newGroup, this.headerOption).then(
+          (res) => {
+            this._toastreService.success(res.message);
+            this.modalRef?.hide();
+          }
+        )
+      }
   }
 
   public decline() {
@@ -66,6 +101,7 @@ export class GroupChatComponent extends ComponentBase implements OnInit {
   public openModal() {
     this.allUserList = [];
     this.selectedUserList = [];
+    this.groupName.reset();
     this.modalRef = this.modalService.show(this.modalTemplate, { class: 'modal-lg' });
 
     this.getAllUsers();
@@ -80,12 +116,12 @@ export class GroupChatComponent extends ComponentBase implements OnInit {
     console.log(this.searchedWord);
   }
 
-  public selectUser(index: number){
+  public selectUser(index: number) {
     this.selectedUserList.push(this.allUserList[index]);
     this.allUserList.splice(index, 1);
   }
 
-  public unSelectUser(index: number){
+  public unSelectUser(index: number) {
     this.allUserList.push(this.selectedUserList[index]);
     this.selectedUserList.splice(index, 1);
   }

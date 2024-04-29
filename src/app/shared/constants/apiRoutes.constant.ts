@@ -18,5 +18,6 @@ export const APIRoutes = {
     updateUserStatus: (receiverId: number, status: boolean) => `/ChatTriggered/TriggeredBySeen/${receiverId}/${status}`,
 
     // group
-    getGroupChats: (groupId: number) => `/CommunityMessage/GetChatGroup/${groupId}`,
+    createGroup: `/CommunityMessage/CreateGroup`,
+    getGroupChats: (groupId: number) => `/CommunityMessage/GetChatGroup/${groupId}`
 }

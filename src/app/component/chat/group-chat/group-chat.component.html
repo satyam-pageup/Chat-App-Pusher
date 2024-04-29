@@ -5,8 +5,13 @@
     <div class="modal-body">
         <div class="row">
             <div class="col-md-6 d-flex justify-content-center align-items-center">
-                <label>Group Name</label>
-                <input type="text">
+                <label>Group Name</label> 
+                <input type="text" [formControl]="groupName">
+                <small class="text-danger" *ngIf="groupName.touched || groupName.dirty">
+                    <small *ngIf="groupName.errors?.['required']">
+                        Required
+                    </small>
+                </small>
             </div>
             <div class="col-md-6 d-flex justify-content-center align-items-center">
                 <div>
@@ -45,6 +50,6 @@
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="decline()">Cancel</button>
-        <button type="button" class="btn btn-primary" (click)="confirm()">Create</button>
+        <button type="button" class="btn btn-primary" (click)="createGroup()">Create</button>
     </div>
 </ng-template>
