@@ -34,7 +34,6 @@ export class GroupChatComponent extends ComponentBase implements OnInit {
           const object: IGroupChat = { ...chat, isSelected: false }
           this.allUserList.push(object);
         })
-        // this.allUserList=res.iterableData;
       }
     )
   }

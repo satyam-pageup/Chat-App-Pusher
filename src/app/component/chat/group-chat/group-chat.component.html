@@ -2,33 +2,41 @@
     <div class="modal-header">
         <h5 class="modal-title">Create Group</h5>
     </div>
-    <div class="modal-body row">
-        <div class="col-md-6 d-flex justify-content-center align-items-center">
-            <label>Group Name</label>
-            <input type="text">
-        </div>
-        <div class="col-md-6 d-flex justify-content-center align-items-center">
-            <div>
-                <input type="text" placeholder="searching.." class="input-box">
-            </div>
-        </div>
+    <div class="modal-body">
         <div class="row">
             <div class="col-md-6 d-flex justify-content-center align-items-center">
+                <label>Group Name</label>
+                <input type="text">
+            </div>
+            <div class="col-md-6 d-flex justify-content-center align-items-center">
+                <div>
+                    <input type="text" placeholder="searching.." class="input-box">
+                </div>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-md-6 px-5 py-3">
                 <div>
                     <h2>Selected Users</h2>
-                    <div *ngFor="let selectedUser of allUserList">
-                        <div *ngIf="selectedUser.isSelected" (click)="selectedUser.isSelected=false">
-                            {{ selectedUser.employeeName}}
+                    <div class="user-list-box">
+                        <div *ngFor="let selectedUser of allUserList">
+                            <div *ngIf="selectedUser.isSelected" (click)="selectedUser.isSelected=false"
+                                class="user-list">
+                                {{ selectedUser.employeeName}}
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6 d-flex justify-content-center align-items-center">
+            <div class="col-md-6 px-5 py-3">
                 <div>
                     <h2>User List</h2>
-                    <div *ngFor="let user of allUserList">
-                        <div *ngIf="!user.isSelected" (click)="user.isSelected=true">
-                            {{ user.employeeName }}
+                    <div class="user-list-box">
+                        <div *ngFor="let user of allUserList">
+                            <div *ngIf="!user.isSelected" (click)="user.isSelected=true" class="user-list">
+                                {{ user.employeeName }}
+                            </div>
                         </div>
                     </div>
                 </div>
