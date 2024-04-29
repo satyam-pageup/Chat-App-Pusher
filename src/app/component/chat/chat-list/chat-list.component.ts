@@ -152,8 +152,6 @@ export class ChatListComponent extends ComponentBase implements OnInit, OnDestro
   }
 
   public getChats(id: number, name: string, chat: ChatBoxI) {
-    console.log(id);
-    
     this._utilService.receiverId = id;
     this._pusherService.updateUserStatus(true);
     this._pusherService.onlineUserF(id,false);

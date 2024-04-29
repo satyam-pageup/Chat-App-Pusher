@@ -1,29 +1,37 @@
-import { Component, Input, TemplateRef, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
+import { ComponentBase } from '../../../shared/class/ComponentBase.class';
+import { CGroupChat, IGroupChatResponse } from '../../../response/group-chat.response';
 
 @Component({
   selector: 'app-group-chat',
   templateUrl: './group-chat.component.html',
   styleUrl: './group-chat.component.scss'
 })
-export class GroupChatComponent {
-
+export class GroupChatComponent extends ComponentBase implements OnInit {
   
-  constructor(private modalService: BsModalService){}
-
   modalRef?: BsModalRef;
   resolve: any;
 
-  //getting access to html template
   @ViewChild('template') modalTemplate!: TemplateRef<void>;
+
+  public groupChatList: IGroupChatResponse[] = [];
+  public groupChatDetail: CGroupChat = new CGroupChat();
   
-  //if yes is clicked, we get 'true'
+  constructor(private modalService: BsModalService){
+    super();
+  }
+
+  
+  ngOnInit(): void {
+      
+  }
+
   public confirm(){
     this.modalRef?.hide();
     this.resolve(true);
   }
 
-  //if no is clicked, we get 'false'
   public decline(){
     this.modalRef?.hide();
     this.resolve(false);
@@ -32,10 +40,14 @@ export class GroupChatComponent {
   public openModal(){
     this.modalRef = this.modalService.show(this.modalTemplate, { class: 'modal-lg' });
 
-    //creating promise to wait for result, untill user clicks yes or no
     return new Promise<boolean>((resolve) =>{
       this.resolve = resolve;
     })
+  }
+
+
+  private getGroupChat(){
+    
   }
 
 }

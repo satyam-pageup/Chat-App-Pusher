@@ -7,6 +7,7 @@ export const APIRoutes = {
     getChatList: '/CommunityMessage/GetChatBox',
     deleteMessage: '/CommunityMessage/DeleteMessage',
     getAllEmployee: '/UserEmployees',
+
     isTyping:(receiverId: number,isTyping:boolean) => `/ChatTriggered/TriggeredByTyping/${receiverId}/${isTyping}`,
     triggerUserOnline:(receiverId: number,status:boolean) => `/ChatTriggered/TriggeredByOnline/${receiverId}/${status}`,
     blockUser:(receiverId: number) => `/BlockUser/BlockUser/${receiverId}`,
@@ -14,5 +15,8 @@ export const APIRoutes = {
     sendMessage: (receiverId: number) => `/CommunityMessage/SendMessage/${receiverId}`,
     getMessageById: (id: number, isGroup:boolean) => `/CommunityMessage/DisplayMessage/${id}/${isGroup}`,
     deleteConversationById: (id: number) => `/CommunityMessage/DeleteConversation/${id}`,
-    updateUserStatus: (receiverId: number, status: boolean) => `/ChatTriggered/TriggeredBySeen/${receiverId}/${status}`
+    updateUserStatus: (receiverId: number, status: boolean) => `/ChatTriggered/TriggeredBySeen/${receiverId}/${status}`,
+
+    // group
+    getGroupChats: (groupId: number) => `/CommunityMessage/GetChatGroup/${groupId}`,
 }
