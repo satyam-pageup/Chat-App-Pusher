@@ -9,15 +9,15 @@
         </div>
         <div class="col-md-6 d-flex justify-content-center align-items-center">
             <div>
-                <input type="text" placeholder="searching.." class="input-box">
+                <input type="text" placeholder="searching.." class="input-box" [(ngModel)]="searchedWord" (input)="onTyping()">
             </div>
         </div>
         <div class="row">
             <div class="col-md-6 d-flex justify-content-center align-items-center">
                 <div>
                     <h2>Selected Users</h2>
-                    <div *ngFor="let selectedUser of allUserList">
-                        <div *ngIf="selectedUser.isSelected" (click)="selectedUser.isSelected=false">
+                    <div *ngFor="let selectedUser of selectedUserList; let i=index">
+                        <div>
                             {{ selectedUser.employeeName}}
                         </div>
                     </div>
@@ -26,8 +26,8 @@
             <div class="col-md-6 d-flex justify-content-center align-items-center">
                 <div>
                     <h2>User List</h2>
-                    <div *ngFor="let user of allUserList">
-                        <div *ngIf="!user.isSelected" (click)="user.isSelected=true">
+                    <div *ngFor="let user of allUserList; let i=index">
+                        <div (click)="selectUser(i)">
                             {{ user.employeeName }}
                         </div>
                     </div>
