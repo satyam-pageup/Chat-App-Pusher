@@ -9,16 +9,26 @@
     outline: none;
 }
 
-.user-list-box{
-height: 400px;
-overflow-y: auto;
+.user-list-box {
+    height: 400px;
+    overflow-y: auto;
+    scrollbar-width: thin;
 }
 
-.user-list{
+.user-list {
     border: 0.3px solid;
     padding: 5px;
-    // margin: 2px 0;
+    margin: 2px 0;
     // width: 100%;
     border-radius: 5px;
     cursor: pointer;
+}
+.sel-user-list {
+    border: 0.3px solid;
+    padding: 5px;
+    margin: 2px 0;
+    // width: 100%;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: aliceblue;
 }

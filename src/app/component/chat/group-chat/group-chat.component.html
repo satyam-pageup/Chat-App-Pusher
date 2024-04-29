@@ -20,10 +20,9 @@
                 <div>
                     <h2>Selected Users</h2>
                     <div class="user-list-box">
-                        <div *ngFor="let selectedUser of allUserList">
-                            <div *ngIf="selectedUser.isSelected" (click)="selectedUser.isSelected=false"
-                                class="user-list">
-                                {{ selectedUser.employeeName}}
+                        <div *ngFor="let selectedUser of selectedUserList">
+                            <div class="sel-user-list d-flex justify-content-between px-3">
+                                {{ selectedUser.employeeName}} <span style="color: red;">x</span>
                             </div>
                         </div>
                     </div>
@@ -33,8 +32,8 @@
                 <div>
                     <h2>User List</h2>
                     <div class="user-list-box">
-                        <div *ngFor="let user of allUserList">
-                            <div *ngIf="!user.isSelected" (click)="user.isSelected=true" class="user-list">
+                        <div *ngFor="let user of allUserList;index as i">
+                            <div class="user-list px-3" (click)="selectUser(i)" >
                                 {{ user.employeeName }}
                             </div>
                         </div>
