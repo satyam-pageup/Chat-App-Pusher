@@ -35,7 +35,7 @@ export class GroupChatComponent extends ComponentBase implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getAllUsers();
+    // this.getAllUsers();
   }
 
 
@@ -47,7 +47,6 @@ export class GroupChatComponent extends ComponentBase implements OnInit {
           const object: IGroupChat = { ...chat, isSelected: false }
           this.allUserList.push(object);
         })
-        this.searchedUserList = this.allUserList;
       }
     )
   }
@@ -65,21 +64,30 @@ export class GroupChatComponent extends ComponentBase implements OnInit {
   }
 
   public openModal() {
+    this.allUserList = [];
+    this.selectedUserList = [];
     this.modalRef = this.modalService.show(this.modalTemplate, { class: 'modal-lg' });
+
+    this.getAllUsers();
+
     return new Promise<boolean>((resolve) => {
       this.resolve = resolve;
     })
+
   }
 
   public onTyping() {
     console.log(this.searchedWord);
-
-
   }
 
   public selectUser(index: number){
-    this.selectedUserList.push(this.searchedUserList[index]);
+    this.selectedUserList.push(this.allUserList[index]);
     this.allUserList.splice(index, 1);
+  }
+
+  public unSelectUser(index: number){
+    this.allUserList.push(this.selectedUserList[index]);
+    this.selectedUserList.splice(index, 1);
   }
 
 }

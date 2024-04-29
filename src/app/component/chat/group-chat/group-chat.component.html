@@ -20,8 +20,8 @@
                 <div>
                     <h2>Selected Users</h2>
                     <div class="user-list-box">
-                        <div *ngFor="let selectedUser of allUserList">
-                            <div *ngIf="selectedUser.isSelected" (click)="selectedUser.isSelected=false"
+                        <div *ngFor="let selectedUser of selectedUserList; let i=index">
+                            <div (click)="unSelectUser(i)"
                                 class="user-list">
                                 {{ selectedUser.employeeName}}
                             </div>
@@ -33,8 +33,8 @@
                 <div>
                     <h2>User List</h2>
                     <div class="user-list-box">
-                        <div *ngFor="let user of allUserList">
-                            <div *ngIf="!user.isSelected" (click)="user.isSelected=true" class="user-list">
+                        <div *ngFor="let user of allUserList; let i=index">
+                            <div (click)="selectUser(i)" class="user-list">
                                 {{ user.employeeName }}
                             </div>
                         </div>
