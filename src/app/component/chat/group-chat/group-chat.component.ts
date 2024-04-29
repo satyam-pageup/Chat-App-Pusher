@@ -5,7 +5,7 @@ import { ComponentBase } from '../../../shared/class/ComponentBase.class';
 import { IEmplyeeOptions } from '../../../model/option.model';
 import { ResponseIterableI } from '../../../response/responseG.response';
 import { APIRoutes } from '../../../shared/constants/apiRoutes.constant';
-import { Subject, debounceTime } from 'rxjs';
+import { UtilService } from '../../../../services/util.service';
 
 @Component({
   selector: 'app-group-chat',
@@ -31,24 +31,21 @@ export class GroupChatComponent extends ComponentBase implements OnInit {
   modalRef?: BsModalRef;
   resolve: any;
 
-  public userSearchSubject: Subject<string> = new Subject<string>();
-  private onDestroy$: Subject<void> = new Subject<void>();
-
-  constructor(private modalService: BsModalService) {
+  constructor(private modalService: BsModalService,private _utilService:UtilService) {
     super();
   }
 
   ngOnInit(): void {
-    // this.getAllUsers();
-    
   }
 
   private getAllUsers() {
     this.postAPICallPromise<IEmplyeeOptions, ResponseIterableI<IGetAllUser[]>>(APIRoutes.getAllEmployee, this.options, this.headerOption).then(
       (res) => {
         res.iterableData.map((chat) => {
-          const object: IGroupChat = { ...chat, isSelected: false }
-          this.allUserList.push(object);
+          if(chat.id!=this._utilService.loggedInUserId){
+            const object: IGroupChat = { ...chat, isSelected: false }
+            this.allUserList.push(object);
+          }
         })
         this.searchedUserList=this.allUserList;
       }
@@ -79,14 +76,21 @@ export class GroupChatComponent extends ComponentBase implements OnInit {
     console.log(this.searchedWord);
     // this.searchedUserLis
     if(this.searchedWord==""){
-      this.searchedUserList=this.allUserList;
+      // this.searchedUserList=this.allUserList;
+      this.allUserList.map(
+        (allUser)=>{
+          if(!this.selectedUserList.includes(allUser)){
+            this.searchedUserList.push(allUser);
+          }
+        }
+      )
       return;
     }
     this.searchedUserList = this.searchedUserList.filter((user)=>user.employeeName.toLowerCase().includes(this.searchedWord.toLowerCase()))
   }
 
   public selectUser(index: number){
-    this.selectedUserList.push(this.allUserList[index]);
+    this.selectedUserList.push(this.searchedUserList[index]);
     this.searchedUserList.splice(index, 1);
   }
 
