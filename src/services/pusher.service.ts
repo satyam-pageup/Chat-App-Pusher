@@ -1,7 +1,7 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import Pusher, { Channel } from 'pusher-js';
 import { environment } from '../environments/environment';
-import { MessageI } from '../app/model/chat.model';
+import { IGetMessage, MessageI } from '../app/model/chat.model';
 import { ComponentBase } from '../app/shared/class/ComponentBase.class';
 import { APIRoutes } from '../app/shared/constants/apiRoutes.constant';
 import { IResponseG } from '../app/response/responseG.response';
@@ -19,7 +19,7 @@ export class PusherService extends ComponentBase{
   public onlineUserChannel!:Channel;
 
   public subcribeToChannelE: EventEmitter<string[]> = new EventEmitter<string[]>();
-  public messageReceivedE: EventEmitter<MessageI> = new EventEmitter<MessageI>();
+  public messageReceivedE: EventEmitter<IGetMessage> = new EventEmitter<IGetMessage>();
 
   constructor(private _utilService: UtilService) {
     super();

@@ -6,7 +6,7 @@ import { UtilService } from '../../../services/util.service';
 import { ComponentBase } from '../../shared/class/ComponentBase.class';
 import { APPRoutes } from '../../shared/constants/appRoutes.contant';
 import { APIRoutes } from '../../shared/constants/apiRoutes.constant';
-import { ResponseDataI } from '../../response/responseG.response';
+import { IResponseG, ResponseDataI } from '../../response/responseG.response';
 import { UserI } from '../../response/user.response';
 import { TokenDecodeService } from '../../../services/token-decode.service';
 import { PusherService } from '../../../services/pusher.service';
@@ -22,7 +22,7 @@ export class LoginComponent extends ComponentBase {
     super();
     if (localStorage.getItem("jwtToken")) {
       // token exists => checking validity of token
-      const data = _tokenDecodeService.getDecodedAccessToken(localStorage.getItem("jwtToken") as string);
+      const data = this._tokenDecodeService.getDecodedAccessToken(localStorage.getItem("jwtToken") as string);
       if (!data) {
         this._router.navigate(['/chat']);
       }
@@ -52,11 +52,10 @@ export class LoginComponent extends ComponentBase {
             localStorage.setItem("jwtToken", res.token);
             this._utilService.EShowUser.emit(true);
             this._pusherService.onlineUserF(res.data.id,true);
+            this._utilService.messageReachedF();
           }
         }
       )
     }
   }
-
-
 }

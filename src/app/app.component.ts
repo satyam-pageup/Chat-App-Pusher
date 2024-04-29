@@ -6,7 +6,7 @@ import { UtilService } from '../services/util.service';
 import { Router } from '@angular/router';
 
 import { PusherService } from '../services/pusher.service';
-import { MessageI } from './model/chat.model';
+import { IGetMessage, MessageI } from './model/chat.model';
 import { Channel } from 'pusher-js';
 import { TokenDecodeService } from '../services/token-decode.service';
 import { IUserStatus } from './model/util.model';
@@ -87,7 +87,7 @@ export class AppComponent extends ComponentBase implements OnInit {
 
   private subscribeChatChannel(channelName: string) {
     this.channel = this._pusherService.subscribeToChannel(channelName);
-    this.channel.bind('my-event', (data: MessageI) => {
+    this.channel.bind('my-event', (data: IGetMessage) => {
       this._pusherService.messageReceivedE.emit(data);
     });
   }
@@ -96,7 +96,6 @@ export class AppComponent extends ComponentBase implements OnInit {
     this.activeUserChannel = this._pusherService.subscribeToChannel('active-user-channel');
     this.activeUserChannel.bind('active-user-event', (data: IUserStatus) => {
       if (!data.triggeredId.startsWith((this._utilService.loggedInUserId).toString())) {
-        console.log(data.triggeredId);
         let i = 0;
         const id: string = data.triggeredId.split('-')[0];
         while (i < this._utilService.activeUserArray.length) {

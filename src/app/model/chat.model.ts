@@ -32,6 +32,16 @@ export interface MessageI{
     messageDate: string;
     receiverId: number;
 }
+export interface IGetMessage{
+    id: number;
+    message: string;
+    name: string;
+    userType: string;
+    senderId: number;
+    status: number;
+    receiverId: number;
+    messageDate: string;
+}
 
 
 export interface MessageNewI{

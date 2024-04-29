@@ -1,5 +1,5 @@
 import { EventEmitter, Injectable, inject } from '@angular/core';
-import { ChatBoxI, MessageI } from '../app/model/chat.model';
+import { ChatBoxI, IGetMessage, MessageI } from '../app/model/chat.model';
 import { IUpdateChatList, NumberString } from '../app/model/util.model';
 import { IGetAllUser, UserI } from '../app/response/user.response';
 import { ComponentBase } from '../app/shared/class/ComponentBase.class';
@@ -15,7 +15,7 @@ export class UtilService extends ComponentBase {
   public EChatClicked: EventEmitter<number> = new EventEmitter<number>();
   public EShowUser: EventEmitter<boolean> = new EventEmitter<boolean>();
   public EUserChat: EventEmitter<{ id: number, name: string }> = new EventEmitter<{ id: number, name: string }>();
-  public EUserPresenceCheckInChatList: EventEmitter<MessageI> = new EventEmitter<MessageI>();
+  public EUserPresenceCheckInChatList: EventEmitter<IGetMessage> = new EventEmitter<IGetMessage>();
   public EUpdateChatList: EventEmitter<IUpdateChatList> = new EventEmitter<IUpdateChatList>();
   public EMarkMessageRead: EventEmitter<null> = new EventEmitter<null>();
 
@@ -38,6 +38,16 @@ export class UtilService extends ComponentBase {
       isSilentCall: 'true'
   })
     return this._httpClient.post<ResponseIterableI<IGetAllUser[]>>(`${this.baseUrl}${APIRoutes.getAllEmployee}`, payload, { headers: myNewHeader });
+  }
+
+
+
+  public messageReachedF(){
+    this.postAPICallPromise<null, IResponseG<null>>(APIRoutes.messageReached, null, this.headerOption).then(
+      (res) =>{
+        console.log(res);
+      }
+    )
   }
 
 }

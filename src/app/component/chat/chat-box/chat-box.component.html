@@ -50,7 +50,7 @@
                             {{chats.message}}
                             <i (click)="deleteMessage(chats.id, i)" class='bx bxs-trash c-p-s'
                                 style="color: black;"></i>
-                            <span>
+                            <!-- <span>
                                 {{ chats.messageDate| utcToIndianTime }}
                                 <i *ngIf="chats.status == 'sending'"
                                     style="color: black;font-size: 15px;  font-weight: bold;"
@@ -63,6 +63,25 @@
                                 <i *ngIf="chats.status == 'seen' "
                                     style="color: blue; font-size: 15px; font-weight: bold;"
                                     class='bx bx-check-double'></i>
+                            </span> -->
+                            <span>
+                                {{ chats.messageDate| utcToIndianTime }}, {{chats.status}}
+                                <i *ngIf="chats.status == 1"
+                                    style="color: black;font-size: 15px;  font-weight: bold;"
+                                    class='bx bx-radio-circle'></i>
+                                    <i *ngIf="chats.status == 2"
+                                    style="color: rgb(51, 51, 51); font-size: 15px;  font-weight: bold;"
+                                    class='bx bx-check'></i>
+                                    
+                                    <i *ngIf="chats.status == 3"
+                                    style="color: rgb(51, 51, 51); font-size: 15px;  font-weight: bold;"
+                                    class='bx bx-check-double'></i>
+                                    
+                                    <i *ngIf="chats.status == 4"
+                                    style="color: blue; font-size: 15px; font-weight: bold;"
+                                    class='bx bx-check-double'></i>
+                                    <i *ngIf="chats.status == 5"
+                                        style="color: red;font-size: 15px; font-weight: bold;" class='bx bx-x-circle'></i>
                             </span>
                         </p>
                     </div>

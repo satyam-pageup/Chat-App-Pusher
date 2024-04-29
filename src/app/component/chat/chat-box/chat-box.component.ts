@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren, viewChild } from '@angular/core';
 import { IResponseG, GetMessageI } from '../../../response/responseG.response';
-import { ChatBoxI, MessageI, MessageNewI } from '../../../model/chat.model';
+import { ChatBoxI, IGetMessage, MessageI, MessageNewI } from '../../../model/chat.model';
 import { GetMessagePaginationI } from '../../../model/pagination.model';
 import { ComponentBase } from '../../../shared/class/ComponentBase.class';
 import { UtilService } from '../../../../services/util.service';
@@ -45,7 +45,7 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
     search: ""
   }
   // public messageList: MessageI[] = [];
-  public messageList: MessageNewI[] = [];
+  public messageList: IGetMessage[] = [];
   public recevierId: number = -1;
   public message: string = '';
   private receiverStystemToken: string = '';
@@ -91,7 +91,7 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
     this.subscribeChannelByName("typing-channel");
     _utilService.EMarkMessageRead.subscribe(() => {
       this.messageList.forEach((message) => {
-        message.status = 'seen';
+        message.status = 4;
       })
     })
   }
@@ -106,8 +106,6 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
     });
 
     this._pusherService.onlineUserChannel.bind('online-user-event', (data: { response: string }) => {
-      console.log(data.response);
-
       const resceivedID: number = parseInt(data.response.split('-')[0]);
       if (resceivedID == this._utilService.loggedInUserId) {
         if (data.response == `${this._utilService.loggedInUserId}-offline`) {
@@ -117,6 +115,13 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
       else if (resceivedID == this._utilService.receiverId) {
         if (data.response == `${this._utilService.receiverId}-online`) {
           this.isUserOnline = true;
+          this.messageList.forEach(
+            (message) => {
+              if (message.status == 2) {
+                message.status = 3
+              }
+            }
+          )
         }
         else if (data.response == `${this._utilService.receiverId}-offline`) {
           this.isUserOnline = false;
@@ -227,14 +232,14 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
       const data: { message: string } = {
         message: this.message.trim()
       }
-      const rMsg: MessageNewI = {
+      const rMsg: IGetMessage = {
         id: -1,
         message: data.message,
         name: this._utilService.loggedInUserName,
         userType: "user",
         senderId: this._utilService.loggedInUserId,
-        isSeen: false,
-        status: "sending",
+        status: 1,
+        receiverId: this._utilService.receiverId,
         messageDate: (this._datePipe.transform(new Date(), 'medium', 'UTC') as string)
       }
       this.messageList.push(rMsg);
@@ -244,18 +249,27 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
       let myNewHeader: HttpHeaders = new HttpHeaders({
         isSendNotification: 'true',
         isSilentCall: 'true'
-    })
+      })
       const hitUrl: string = `${environment.baseUrl}${APIRoutes.sendMessage(this.recevierId)}`
-      this._httpClient.post<IResponseG<MessageI>>(hitUrl, data, {headers: myNewHeader} ).subscribe({
+      this._httpClient.post<IResponseG<IGetMessage>>(hitUrl, data, { headers: myNewHeader }).subscribe({
         next: (res) => {
           this._utilService.EUserPresenceCheckInChatList.emit(res.data);
-          this.messageList[index].status = this._utilService.activeUserArray.includes(`${this.recevierId}-${this._utilService.loggedInUserId}-active`) ? 'seen' : 'success';
-          this.messageList[index].id = res.data.id;
-          this.messageList[index].messageDate = res.data.messageDate;
+          this.messageList[index] = res.data;
+
+          if (this.isUserOnline) {
+            this.messageList[index].status = 2;
+          }
+
+          if (this.isUserOnline) {
+            this.messageList[index].status = (this._utilService.activeUserArray.includes(`${this.recevierId}-${this._utilService.loggedInUserId}-active`) ? 4 : 3);
+          }
+
+          this.isScrollToBottom = true;
+
           this.firebaseService.sendNotification({ receiverSystemToken: this.receiverStystemToken, title: "WhatsApp", body: data.message }, this._utilService.loggedInUserId);
         },
         error: (err) => {
-          this.messageList[index].status = "failed";
+          this.messageList[index].status = 5;
           console.log(err);
         }
       })
@@ -371,7 +385,6 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
     this._utilService.EChatClicked.subscribe(
       (id: number) => {
         this.recevierId = id;
-        // this._pusherService.subscribeUserChatChannel('active');
         this.getChatByIdListen(id);
         if (id > -1)
           this.showChatMessages = true;
@@ -382,21 +395,10 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
 
     this.userChatEmitterSubcribedF();
 
-    this._pusherService.messageReceivedE.subscribe((msg: MessageI) => {
+    this._pusherService.messageReceivedE.subscribe((msg: IGetMessage) => {
       if (msg.senderId == this._utilService.currentOpenedChat) {
         this.isScrollToBottom = true;
-        const rMsg: MessageNewI = {
-          id: msg.id,
-          message: msg.message,
-          name: msg.name,
-          userType: msg.userType,
-          senderId: msg.senderId,
-          isSeen: msg.isSeen,
-          status: "",
-          messageDate: msg.messageDate,
-        }
-
-        this.messageList.push(rMsg);
+        this.messageList.push(msg);
       }
       else {
         if (msg.receiverId == this._utilService.loggedInUserId) {
@@ -416,26 +418,10 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
 
       this.isUserOnline = this._utilService.onlineUserArray.includes(this.recevierId);
 
-      this.postAPICallPromise<GetMessagePaginationI, GetMessageI<MessageI[]>>(APIRoutes.getMessageById(res.id, false), this.options, this.headerOption).then(
+      this.postAPICallPromise<GetMessagePaginationI, GetMessageI<IGetMessage[]>>(APIRoutes.getMessageById(res.id, false), this.options, this.headerOption).then(
         (res) => {
           this.showChatMessages = true;
-          this.messageList = [];
-          res.data.data.forEach(
-            (msg: MessageI) => {
-              const rMsg: MessageNewI = {
-                id: msg.id,
-                message: msg.message,
-                name: msg.name,
-                userType: msg.userType,
-                senderId: msg.senderId,
-                isSeen: msg.isSeen,
-                status: (msg.isSeen) ? 'seen' : 'success',
-                messageDate: msg.messageDate,
-              }
-
-              this.messageList.push(rMsg);
-            }
-          )
+          this.messageList = res.data.data;
 
           this.receiverStystemToken = res.data.systemToken;
           this.isScrollToBottom = true;
@@ -452,23 +438,14 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
 
   private getChatById() {
     if (this._utilService.currentOpenedChat != -1) {
-      this.postAPICallPromise<GetMessagePaginationI, GetMessageI<MessageI[]>>(APIRoutes.getMessageById(this._utilService.currentOpenedChat, false), this.options, this.headerOption).then(
+      this.postAPICallPromise<GetMessagePaginationI, GetMessageI<IGetMessage[]>>(APIRoutes.getMessageById(this._utilService.currentOpenedChat, false), this.options, this.headerOption).then(
         (res) => {
           if (this.isSendMsg) {
             this.messageList = [];
             this.isSendMsg = false;
           }
           for (let i = res.data.data.length - 1; i > -1; i--) {
-            const rMsg: MessageNewI = {
-              id: res.data.data[i].id,
-              message: res.data.data[i].message,
-              name: res.data.data[i].name,
-              userType: res.data.data[i].userType,
-              senderId: res.data.data[i].senderId,
-              isSeen: res.data.data[i].isSeen,
-              status: "",
-              messageDate: res.data.data[i].messageDate,
-            }
+            const rMsg: IGetMessage = { ...(res.data.data[i]) }
             this.messageList.unshift(rMsg);
           }
           this.receiverStystemToken = res.data.systemToken;
@@ -506,25 +483,9 @@ export class ChatBoxComponent extends ComponentBase implements OnInit, AfterView
   private getChatByIdListen(id: number) {
     this.options.index = 0;
     if (this._utilService.currentOpenedChat != -1) {
-      this.postAPICallPromise<GetMessagePaginationI, GetMessageI<MessageI[]>>(APIRoutes.getMessageById(id, false), this.options, this.headerOption).then(
+      this.postAPICallPromise<GetMessagePaginationI, GetMessageI<IGetMessage[]>>(APIRoutes.getMessageById(id, false), this.options, this.headerOption).then(
         (res) => {
-
-          res.data.data.forEach(
-            (msg: MessageI) => {
-              const rMsg: MessageNewI = {
-                id: msg.id,
-                message: msg.message,
-                name: msg.name,
-                userType: msg.userType,
-                senderId: msg.senderId,
-                isSeen: msg.isSeen,
-                status: (msg.isSeen) ? 'seen' : 'unseen',
-                messageDate: msg.messageDate,
-              }
-
-              this.messageList.push(rMsg);
-            }
-          )
+          this.messageList = res.data.data;
 
           this.receiverStystemToken = res.data.systemToken;
           this.isScrollToBottom = true;
